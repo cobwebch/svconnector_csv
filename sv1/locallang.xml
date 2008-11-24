@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<description>Localisation file for CSV Connector Service</description>
+		<type>module</type>
+		<csh_table></csh_table>
+		<fileId>EXT:svonnector_csv/sv1/locallang.xml</fileId>
+		<labelContext type="array">
+		</labelContext>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="connection_failed">Connection failed</label>
+			<label index="connection_success">Connection successful</label>
+			<label index="bad_response">Bad response received</label>
+		</languageKey>
+	</data>
+</T3locallang>
