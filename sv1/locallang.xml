@@ -10,8 +10,8 @@
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
-			<label index="connection_failed">Connection failed</label>
-			<label index="connection_success">Connection successful</label>
+			<label index="no_file_defined">No file defined for import.</label>
+			<label index="file_not_found">Import file not found: %s</label>
 			<label index="bad_response">Bad response received</label>
 		</languageKey>
 	</data>

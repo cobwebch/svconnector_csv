@@ -52,20 +52,21 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_sv1 {
 	 */
 	public function init() {
 		parent::init();
-		$this->lang->loadLL('EXT:'.$this->extKey.'/sv1/locallang.xml');
+		$this->lang->includeLLFile('EXT:'.$this->extKey.'/sv1/locallang.xml');
 		return true;
 	}
 
 	/**
-	 * This method calls the query and returns the results from the response as is
-	 * It also implements the processRawData hook for processing the results returned by the distant source
+	 * This method calls the query method and returns the result as is,
+	 * i.e. the content of the file as a string
+	 * It does not take into accounts all the parameters related to parsing the CSV data
 	 *
 	 * @param	array	$parameters: parameters for the call
 	 *
 	 * @return	mixed	server response
 	 */
 	public function fetchRaw($parameters) {
-		$result = $this->query();
+		$result = $this->query($parameters);
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processRaw'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processRaw'] as $className) {
 				$processor = &t3lib_div::getUserObj($className);
@@ -83,9 +84,18 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_sv1 {
 	 * @return	string	XML structure
 	 */
 	public function fetchXML($parameters) {
-		$result = $this->query($parameters);
-		// Transform result to XML (if necessary) and return it
+		// Get the data as an array
+		$result = $this->fetchArray($parameters);
+		// Transform result to XML
+		$xml = t3lib_div::array2xml($result);
 		// Implement processXML hook (see fetchRaw())
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processXML'])) {
+			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processXML'] as $className) {
+				$processor = &t3lib_div::getUserObj($className);
+				$xml = $processor->processXML($xml, $this);
+			}
+		}
+		return $xml;
 	}
 
 	/**
@@ -96,53 +106,84 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_sv1 {
 	 * @return	array	PHP array
 	 */
 	public function fetchArray($parameters) {
+		// Get the data from the file
 		$result = $this->query($parameters);
-		// Transform result to PHP array and return it
+		// Transform result to a PHP array
+		$lines = t3lib_div::trimExplode("\n", $result, 1);
+if (TYPO3_DLOG || true) {
+	t3lib_div::devLog('Lines from file', $this->extKey, -1, $lines);
+}
+		// Shave off the indicated number of rows from the beginning of the file
+		// NOTE:	skip_rows is normally expected to be 1 and the removed row is expected
+		//			to contain the names of the columns
+		if (!empty($parameters['skip_rows'])) {
+			for ($i = 0; $i < $parameters['skip_rows']; $i++) {
+				$headerRow = array_shift($lines);
+			}
+			$headers = t3lib_div::trimExplode($parameters['delimiter'], $headerRow, 1);
+		}
+
+		// Process the remaining lines
+		$data = array();
+		foreach ($lines as $aLine) {
+			$columns = t3lib_div::trimExplode($parameters['delimiter'], $aLine);
+			$numColumns = count($columns);
+			$lineData = array();
+			for ($i = 0; $i < $numColumns; $i++) {
+				if (!empty($parameters['text_qualifier']) && strpos($columns[$i], $parameters['text_qualifier']) === 0) {
+					$value = substr($columns[$i], 1, strlen($columns[$i]) - 2);
+				}
+				else {
+					$value = $columns[$i];
+				}
+				if (isset($headers[$i])) {
+					$lineData[$headers[$i]] = $value;
+				}
+				else {
+					$lineData[] = $value;
+				}
+			}
+			$data[] = $lineData;
+		}
+if (TYPO3_DLOG || true) {
+	t3lib_div::devLog('Parsed data', $this->extKey, -1, $data);
+}
+
 		// Implement processArray hook (see fetchRaw())
 	}
 
 	/**
-	 * This method queries the distant server given some parameters and returns the server response
-	 * This base implementation just shows how to use the processParameters. It calls on the functions using the hook
-	 * if they are any or else assembles a simple, HTTP-like query string.
-	 * It also calls a hook for processing the raw data after getting it from the distant source
-	 * This is just an example and you will need to implement your own query() method.
+	 * This method reads the content of the file defined in the parameters
+	 * and returns it as a single string
+	 *
+	 * NOTE:	this method does not implement the "processParameters" hook,
+	 *			as it does not make sense in this case
 	 *
 	 * @param	array	$parameters: parameters for the call
-	 *
-	 * @return	mixed	server response
+	 * @return	string	content of the file
 	 */
 	protected function query($parameters) {
-/*
-		$queryString = '';
-		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processParameters'])) {
-			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processParameters'] as $className) {
-				$processor = &t3lib_div::getUserObj($className);
-				$queryString = $processor->processParameters($parameters, $this);
-			}
+		$fileData = '';
+		if (TYPO3_DLOG || true) {
+			t3lib_div::devLog('Call parameters', $this->extKey, -1, $parameters);
 		}
-		elseif (is_array($parameters)) {
-			foreach ($parameters as $key => $value) {
-				$cleanValue = trim($value);
-				$queryString .= '&'.$key.'='.urlencode($cleanValue);
-			}
-		}
- */
  		// Check if the file is defined and exists
-		if (empty($parameters['file'])) {
-			// Error: no file given
+		if (empty($parameters['filename'])) {
+			if (TYPO3_DLOG || true) {
+				t3lib_div::devLog($this->lang->getLL('no_file_defined'), $this->extKey, 3);
+			}
 		}
 		else {
-			$fullFilename = t3lib_div::getFileAbsFileName($parameters['file']);
-			if (empty($fullFilename)) {
-				// Error: invalid file name
-			}
-			else {
-				if (file_exists($fullFilename)) {
-					$fileData = file($fullFilename);
+			if (file_exists($parameters['filename'])) {
+				$fileData = file_get_contents($parameters['filename']);
+				if (TYPO3_DLOG || true) {
+					t3lib_div::devLog('Data from file', $this->extKey, -1, $fileData);
 				}
-				else {
-					// Error: file does not exist
+			}
+				// Error: file does not exist
+			else {
+				if (TYPO3_DLOG || true) {
+					t3lib_div::devLog(sprintf($this->lang->getLL('file_not_found'), $parameters['file']), $this->extKey, 3);
 				}
 			}
 		}
@@ -154,6 +195,7 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_sv1 {
 			}
 		}
 		// Return the result
+		return $fileData;
 	}
 }
 
