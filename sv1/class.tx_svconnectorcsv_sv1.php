@@ -58,8 +58,7 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_sv1 {
 
 	/**
 	 * This method calls the query method and returns the result as is,
-	 * i.e. the content of the file as a string
-	 * It does not take into accounts all the parameters related to parsing the CSV data
+	 * i.e. the parsed CSV data, but without any additional work performed on it
 	 *
 	 * @param	array	$parameters: parameters for the call
 	 *
@@ -67,6 +66,7 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_sv1 {
 	 */
 	public function fetchRaw($parameters) {
 		$result = $this->query($parameters);
+		// Implement post-processing hook
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processRaw'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processRaw'] as $className) {
 				$processor = &t3lib_div::getUserObj($className);
@@ -88,7 +88,7 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_sv1 {
 		$result = $this->fetchArray($parameters);
 		// Transform result to XML
 		$xml = t3lib_div::array2xml($result);
-		// Implement processXML hook (see fetchRaw())
+		// Implement post-processing hook
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processXML'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processXML'] as $className) {
 				$processor = &t3lib_div::getUserObj($className);
@@ -106,50 +106,40 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_sv1 {
 	 * @return	array	PHP array
 	 */
 	public function fetchArray($parameters) {
-		// Get the data from the file
+			// Get the data from the file
 		$result = $this->query($parameters);
-		// Transform result to a PHP array
-		$lines = t3lib_div::trimExplode("\n", $result, 1);
-if (TYPO3_DLOG || true) {
-	t3lib_div::devLog('Lines from file', $this->extKey, -1, $lines);
-}
-		// Shave off the indicated number of rows from the beginning of the file
-		// NOTE:	skip_rows is normally expected to be 1 and the removed row is expected
-		//			to contain the names of the columns
+			// Handle header rows, if any
 		if (!empty($parameters['skip_rows'])) {
 			for ($i = 0; $i < $parameters['skip_rows']; $i++) {
-				$headerRow = array_shift($lines);
+				$headers = array_shift($result);
 			}
-			$headers = t3lib_div::trimExplode($parameters['delimiter'], $headerRow, 1);
 		}
-
-		// Process the remaining lines
 		$data = array();
-		foreach ($lines as $aLine) {
-			$columns = t3lib_div::trimExplode($parameters['delimiter'], $aLine);
-			$numColumns = count($columns);
-			$lineData = array();
-			for ($i = 0; $i < $numColumns; $i++) {
-				if (!empty($parameters['text_qualifier']) && strpos($columns[$i], $parameters['text_qualifier']) === 0) {
-					$value = substr($columns[$i], 1, strlen($columns[$i]) - 2);
+		foreach ($result as $row) {
+			$rowData = array();
+			foreach ($row as $index => $value) {
+				if (isset($headers[$index])) {
+					$key = $headers[$index];
 				}
 				else {
-					$value = $columns[$i];
+					$key = $index;
 				}
-				if (isset($headers[$i])) {
-					$lineData[$headers[$i]] = $value;
-				}
-				else {
-					$lineData[] = $value;
-				}
+				$rowData[$key] = $value;
 			}
-			$data[] = $lineData;
+			$data[] = $rowData;
 		}
-if (TYPO3_DLOG || true) {
-	t3lib_div::devLog('Parsed data', $this->extKey, -1, $data);
-}
+		if (TYPO3_DLOG || true) {
+			t3lib_div::devLog('Structured data', $this->extKey, -1, $data);
+		}
 
-		// Implement processArray hook (see fetchRaw())
+		// Implement post-processing hook
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processArray'])) {
+			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processArray'] as $className) {
+				$processor = &t3lib_div::getUserObj($className);
+				$data = $processor->processArray($data, $this);
+			}
+		}
+		return $data;
 	}
 
 	/**
@@ -175,7 +165,17 @@ if (TYPO3_DLOG || true) {
 		}
 		else {
 			if (file_exists($parameters['filename'])) {
-				$fileData = file_get_contents($parameters['filename']);
+				$fp = fopen($parameters['filename'], 'r');
+				while ($row = fgetcsv($fp, 0, $parameters['delimiter'], $parameters['text_qualifier'])) {
+					$fileData[] = $row;
+				}
+				fclose($fp);
+/*
+				if ($parameters['encoding'] != 'utf8') {
+					$fileData = $GLOBALS['LANG']->csConvObj->conv($fileData, $parameters['encoding'], 'utf8');
+				}
+ * 
+ */
 				if (TYPO3_DLOG || true) {
 					t3lib_div::devLog('Data from file', $this->extKey, -1, $fileData);
 				}
@@ -191,7 +191,7 @@ if (TYPO3_DLOG || true) {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processResponse'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processResponse'] as $className) {
 				$processor = &t3lib_div::getUserObj($className);
-				$result = $processor->processResponse($result, $this);
+				$fileData = $processor->processResponse($fileData, $this);
 			}
 		}
 		// Return the result
