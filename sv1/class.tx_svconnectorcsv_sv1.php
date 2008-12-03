@@ -166,7 +166,9 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_sv1 {
 		else {
 			if (file_exists($parameters['filename'])) {
 				$fp = fopen($parameters['filename'], 'r');
-				while ($row = fgetcsv($fp, 0, $parameters['delimiter'], $parameters['text_qualifier'])) {
+				$delimiter = (empty($parameters['delimiter'])) ? ',' : $parameters['delimiter'];
+				$qualifier = (empty($parameters['text_qualifier'])) ? '"' : $parameters['text_qualifier'];
+				while ($row = fgetcsv($fp, 0, $delimiter, $qualifier)) {
 					$fileData[] = $row;
 				}
 				fclose($fp);
