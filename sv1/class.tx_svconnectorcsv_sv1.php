@@ -89,7 +89,7 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_sv1 {
 		// Get the data as an array
 		$result = $this->fetchArray($parameters);
 		// Transform result to XML
-		$xml = t3lib_div::array2xml($result);
+		$xml = t3lib_div::array2xml_cs($result);
 		// Implement post-processing hook
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processXML'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processXML'] as $className) {
@@ -166,21 +166,27 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_sv1 {
 			}
 		}
 		else {
-			if (file_exists($parameters['filename'])) {
+			$filename = t3lib_div::getFileAbsFileName($parameters['filename']);
+			if (file_exists($filename)) {
 					// Check if the current (BE) charset is the same as the file encoding
-				$encoding = $this->lang->csConvObj->parse_charset($parameters['encoding']);
-				$isSameCharset = $this->lang->charSet == $encoding;
+				if (empty($parameters['encoding'])) {
+					$isSameCharset = true;
+				}
+				else {
+					$encoding = $this->lang->csConvObj->parse_charset($parameters['encoding']);
+					$isSameCharset = $this->lang->charSet == $encoding;
+				}
 					// Open the file and read it line by line, already interpreted as CSV data
-				$fp = fopen($parameters['filename'], 'r');
-				$delimiter = (empty($parameters['delimiter'])) ? ',' : $parameters['delimiter'];
-				$qualifier = (empty($parameters['text_qualifier'])) ? '"' : $parameters['text_qualifier'];
+				$fp = fopen($filename, 'r');
+				$delimiter = (isset($parameters['delimiter'])) ? $parameters['delimiter'] : ',';
+				$qualifier = (isset($parameters['text_qualifier'])) ? $parameters['text_qualifier'] : '"';
 				while ($row = fgetcsv($fp, 0, $delimiter, $qualifier)) {
 					$numData = count($row);
 						// If the charset of the file is not the same as the BE charset,
 						// convert every input to the proper charset
 					if (!$isSameCharset) {
 						for ($i = 0; $i < $numData; $i++) {
-							$row[$i] = $this->lang->csConvObj->conv($row[$i], $encoding, $GLOBALS['LANG']->charSet);
+							$row[$i] = $this->lang->csConvObj->conv($row[$i], $encoding, $this->lang->charSet);
 						}
 					}
 					$fileData[] = $row;
