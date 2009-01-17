@@ -178,8 +178,8 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_sv1 {
 				}
 					// Open the file and read it line by line, already interpreted as CSV data
 				$fp = fopen($filename, 'r');
-				$delimiter = (isset($parameters['delimiter'])) ? $parameters['delimiter'] : ',';
-				$qualifier = (isset($parameters['text_qualifier'])) ? $parameters['text_qualifier'] : '"';
+				$delimiter = (empty($parameters['delimiter'])) ? ',' : $parameters['delimiter'];
+				$qualifier = (empty($parameters['text_qualifier'])) ? '"' : $parameters['text_qualifier'];
 				while ($row = fgetcsv($fp, 0, $delimiter, $qualifier)) {
 					$numData = count($row);
 						// If the charset of the file is not the same as the BE charset,
