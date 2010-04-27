@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2008 Francois Suter (Cobweb) <typo3@cobweb.ch>
+*  (c) 2008-2010 Francois Suter (Cobweb) <typo3@cobweb.ch>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -20,25 +20,20 @@
 *  GNU General Public License for more details.
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
-*
-* $Id$
 ***************************************************************/
-/**
- * [CLASS/FUNCTION INDEX of SCRIPT]
- *
- * Hint: use extdeveval to insert/update function index above.
- */
 
-require_once(t3lib_extMgm::extPath('svconnector').'sv1/class.tx_svconnector_sv1.php');
+require_once(t3lib_extMgm::extPath('svconnector', 'sclass.tx_svconnector_base.php'));
 
 /**
  * Service "CSV connector" for the "svconnector_csv" extension.
  *
- * @author	Francois Suter (Cobweb) <typo3@cobweb.ch>
- * @package	TYPO3
+ * @author		Francois Suter (Cobweb) <typo3@cobweb.ch>
+ * @package		TYPO3
  * @subpackage	tx_svconnectorcsv
+ *
+ * $Id$
  */
-class tx_svconnectorcsv_sv1 extends tx_svconnector_sv1 {
+class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 	public $prefixId = 'tx_svconnectorcsv_sv1';		// Same as class name
 	public $scriptRelPath = 'sv1/class.tx_svconnectorcsv_sv1.php';	// Path to this script relative to the extension dir.
 	public $extKey = 'svconnector_csv';	// The extension key.
@@ -55,7 +50,7 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_sv1 {
 		parent::init();
 		$this->lang->includeLLFile('EXT:'.$this->extKey.'/sv1/locallang.xml');
 		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extKey]);
-		return true;
+		return TRUE;
 	}
 
 	/**
@@ -68,7 +63,7 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_sv1 {
 	 */
 	public function fetchRaw($parameters) {
 		$result = $this->query($parameters);
-		// Implement post-processing hook
+			// Implement post-processing hook
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processRaw'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processRaw'] as $className) {
 				$processor = &t3lib_div::getUserObj($className);
@@ -86,11 +81,11 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_sv1 {
 	 * @return	string	XML structure
 	 */
 	public function fetchXML($parameters) {
-		// Get the data as an array
+			// Get the data as an array
 		$result = $this->fetchArray($parameters);
-		// Transform result to XML
+			// Transform result to XML
 		$xml = t3lib_div::array2xml_cs($result);
-		// Implement post-processing hook
+			// Implement post-processing hook
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processXML'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processXML'] as $className) {
 				$processor = &t3lib_div::getUserObj($className);
@@ -108,6 +103,7 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_sv1 {
 	 * @return	array	PHP array
 	 */
 	public function fetchArray($parameters) {
+		$headers = array();
 			// Get the data from the file
 		$result = $this->query($parameters);
 			// Handle header rows, if any
@@ -122,8 +118,7 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_sv1 {
 			foreach ($row as $index => $value) {
 				if (isset($headers[$index])) {
 					$key = $headers[$index];
-				}
-				else {
+				} else {
 					$key = $index;
 				}
 				$rowData[$key] = $value;
@@ -134,7 +129,7 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_sv1 {
 			t3lib_div::devLog('Structured data', $this->extKey, -1, $data);
 		}
 
-		// Implement post-processing hook
+			// Implement post-processing hook
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processArray'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processArray'] as $className) {
 				$processor = &t3lib_div::getUserObj($className);
@@ -159,20 +154,18 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_sv1 {
 		if (TYPO3_DLOG || $this->extConf['debug']) {
 			t3lib_div::devLog('Call parameters', $this->extKey, -1, $parameters);
 		}
- 		// Check if the file is defined and exists
+			// Check if the file is defined and exists
 		if (empty($parameters['filename'])) {
 			if (TYPO3_DLOG || $this->extConf['debug']) {
 				t3lib_div::devLog($this->lang->getLL('no_file_defined'), $this->extKey, 3);
 			}
-		}
-		else {
+		} else {
 			$filename = t3lib_div::getFileAbsFileName($parameters['filename']);
 			if (file_exists($filename)) {
 					// Check if the current (BE) charset is the same as the file encoding
 				if (empty($parameters['encoding'])) {
-					$isSameCharset = true;
-				}
-				else {
+					$isSameCharset = TRUE;
+				} else {
 					$encoding = $this->lang->csConvObj->parse_charset($parameters['encoding']);
 					$isSameCharset = $this->lang->charSet == $encoding;
 				}
@@ -195,22 +188,22 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_sv1 {
 				if (TYPO3_DLOG || $this->extConf['debug']) {
 					t3lib_div::devLog('Data from file', $this->extKey, -1, $fileData);
 				}
-			}
+
 				// Error: file does not exist
-			else {
+			} else {
 				if (TYPO3_DLOG || $this->extConf['debug']) {
 					t3lib_div::devLog(sprintf($this->lang->getLL('file_not_found'), $parameters['file']), $this->extKey, 3);
 				}
 			}
 		}
-		// Process the result if any hook is registered
+			// Process the result if any hook is registered
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processResponse'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processResponse'] as $className) {
 				$processor = &t3lib_div::getUserObj($className);
 				$fileData = $processor->processResponse($fileData, $this);
 			}
 		}
-		// Return the result
+			// Return the result
 		return $fileData;
 	}
 }
