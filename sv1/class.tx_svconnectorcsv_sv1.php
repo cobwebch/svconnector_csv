@@ -22,7 +22,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(t3lib_extMgm::extPath('svconnector', 'sclass.tx_svconnector_base.php'));
+require_once(t3lib_extMgm::extPath('svconnector', 'class.tx_svconnector_base.php'));
 
 /**
  * Service "CSV connector" for the "svconnector_csv" extension.

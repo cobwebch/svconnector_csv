@@ -1,3 +1,8 @@
-09-01-16 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2010-04-27 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Changed service to use new connector base class
+	* Released version 1.0.1
+
+2009-01-16 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Released version 0.1.0
