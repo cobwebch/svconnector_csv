@@ -108,7 +108,6 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 			// Get the data from the file
 		$result = $this->query($parameters);
 		$numResults = count($result);
-t3lib_div::devLog('Data from file - ' . $numResults, 'svconnector_csv', 0, $result);
 			// If there are some results, process them
 		if ($numResults > 0) {
 				// Handle header rows, if any
