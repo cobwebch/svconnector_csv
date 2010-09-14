@@ -104,26 +104,31 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 	 */
 	public function fetchArray($parameters) {
 		$headers = array();
+		$data = array();
 			// Get the data from the file
 		$result = $this->query($parameters);
-			// Handle header rows, if any
-		if (!empty($parameters['skip_rows'])) {
-			for ($i = 0; $i < $parameters['skip_rows']; $i++) {
-				$headers = array_shift($result);
-			}
-		}
-		$data = array();
-		foreach ($result as $row) {
-			$rowData = array();
-			foreach ($row as $index => $value) {
-				if (isset($headers[$index])) {
-					$key = $headers[$index];
-				} else {
-					$key = $index;
+		$numResults = count($result);
+t3lib_div::devLog('Data from file - ' . $numResults, 'svconnector_csv', 0, $result);
+			// If there are some results, process them
+		if ($numResults > 0) {
+				// Handle header rows, if any
+			if (!empty($parameters['skip_rows'])) {
+				for ($i = 0; $i < $parameters['skip_rows']; $i++) {
+					$headers = array_shift($result);
 				}
-				$rowData[$key] = $value;
 			}
-			$data[] = $rowData;
+			foreach ($result as $row) {
+				$rowData = array();
+				foreach ($row as $index => $value) {
+					if (isset($headers[$index])) {
+						$key = $headers[$index];
+					} else {
+						$key = $index;
+					}
+					$rowData[$key] = $value;
+				}
+				$data[] = $rowData;
+			}
 		}
 		if (TYPO3_DLOG || $this->extConf['debug']) {
 			t3lib_div::devLog('Structured data', $this->extKey, -1, $data);
@@ -150,7 +155,7 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 	 * @return	string	content of the file
 	 */
 	protected function query($parameters) {
-		$fileData = '';
+		$fileData = array();
 		if (TYPO3_DLOG || $this->extConf['debug']) {
 			t3lib_div::devLog('Call parameters', $this->extKey, -1, $parameters);
 		}
