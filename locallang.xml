@@ -4,7 +4,7 @@
 		<description>General labels for CSV Connector Service</description>
 		<type>module</type>
 		<csh_table></csh_table>
-		<fileId>EXT:svonnector_csv/locallang.xml</fileId>
+		<fileId>EXT:svconnector_csv/locallang.xml</fileId>
 		<labelContext type="array">
 		</labelContext>
 	</meta>
