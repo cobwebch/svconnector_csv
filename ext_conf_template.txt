@@ -1,2 +1,2 @@
-# cat=basic/enable/; type=boolean; label=Debug: Check to turn on debugging to the Dev Log. Debugging also takes place if TYPO3_DLOG is true. Requires devlog or similar extension.
+# cat=basic/enable/; type=boolean; label=LLL:EXT:svconnector_csv/locallang.xml:config_debug
 debug = 0
