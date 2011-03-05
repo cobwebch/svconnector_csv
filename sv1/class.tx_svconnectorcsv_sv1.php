@@ -48,7 +48,7 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 	 */
 	public function init() {
 		parent::init();
-		$this->lang->includeLLFile('EXT:'.$this->extKey.'/sv1/locallang.xml');
+		$this->lang->includeLLFile('EXT:' . $this->extKey . '/sv1/locallang.xml');
 		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extKey]);
 		return TRUE;
 	}
