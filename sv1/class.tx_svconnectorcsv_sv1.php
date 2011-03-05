@@ -163,6 +163,7 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 			if (TYPO3_DLOG || $this->extConf['debug']) {
 				t3lib_div::devLog($this->lang->getLL('no_file_defined'), $this->extKey, 3);
 			}
+			throw new Exception($this->lang->getLL('no_file_defined'), 1299358179);
 		} else {
 			$filename = t3lib_div::getFileAbsFileName($parameters['filename']);
 			if (file_exists($filename)) {
@@ -196,8 +197,9 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 				// Error: file does not exist
 			} else {
 				if (TYPO3_DLOG || $this->extConf['debug']) {
-					t3lib_div::devLog(sprintf($this->lang->getLL('file_not_found'), $parameters['file']), $this->extKey, 3);
+					t3lib_div::devLog(sprintf($this->lang->getLL('file_not_found'), $filename), $this->extKey, 3);
 				}
+				throw new Exception(sprintf($this->lang->getLL('file_not_found'), $filename), 1299358355);
 			}
 		}
 			// Process the result if any hook is registered

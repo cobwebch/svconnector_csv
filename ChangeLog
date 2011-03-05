@@ -1,3 +1,7 @@
+2011-03-05 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added throwing of exceptions when query fails, resolves #10706
+
 2010-11-30 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Moved extension configuration labels to locallang file
