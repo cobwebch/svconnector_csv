@@ -1,13 +1,13 @@
 <?php
 
 ########################################################################
-# Extension Manager/Repository config file for ext: "svconnector_csv"
+# Extension Manager/Repository config file for ext "svconnector_csv".
 #
-# Auto generated 27-04-2010 18:16
+# Auto generated 08-03-2011 22:09
 #
 # Manual updates:
-# Only the data in the array - anything else is removed by next write.
-# "version" and "dependencies" must not be touched!
+# Only the data in the array - everything else is removed by next
+# writing. "version" and "dependencies" must not be touched!
 ########################################################################
 
 $EM_CONF[$_EXTKEY] = array(
@@ -29,17 +29,17 @@ $EM_CONF[$_EXTKEY] = array(
 	'clearCacheOnLoad' => 1,
 	'lockType' => '',
 	'author_company' => '',
-	'version' => '1.0.1',
+	'version' => '1.1.0',
 	'constraints' => array(
 		'depends' => array(
-			'svconnector' => '1.1.0-0.0.0',
+			'svconnector' => '2.0.0-0.0.0',
 		),
 		'conflicts' => array(
 		),
 		'suggests' => array(
 		),
 	),
-	'_md5_values_when_last_written' => 'a:8:{s:9:"ChangeLog";s:4:"7eaf";s:10:"README.txt";s:4:"dfb5";s:21:"ext_conf_template.txt";s:4:"ef02";s:12:"ext_icon.gif";s:4:"c460";s:17:"ext_localconf.php";s:4:"8c7f";s:14:"doc/manual.sxw";s:4:"9ce9";s:35:"sv1/class.tx_svconnectorcsv_sv1.php";s:4:"2c30";s:17:"sv1/locallang.xml";s:4:"e842";}',
+	'_md5_values_when_last_written' => 'a:11:{s:9:"ChangeLog";s:4:"75f0";s:10:"README.txt";s:4:"dfb5";s:16:"ext_autoload.php";s:4:"1911";s:21:"ext_conf_template.txt";s:4:"1f2a";s:12:"ext_icon.gif";s:4:"559f";s:17:"ext_localconf.php";s:4:"8c7f";s:13:"locallang.xml";s:4:"81be";s:14:"doc/manual.pdf";s:4:"e029";s:14:"doc/manual.sxw";s:4:"8f4b";s:35:"sv1/class.tx_svconnectorcsv_sv1.php";s:4:"f4a9";s:17:"sv1/locallang.xml";s:4:"e842";}',
 	'suggests' => array(
 	),
 );

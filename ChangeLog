@@ -1,3 +1,7 @@
+2011-03-08 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Released version 1.1.0
+
 2011-03-05 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added throwing of exceptions when query fails, resolves #10706
