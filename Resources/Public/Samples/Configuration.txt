@@ -3,3 +3,4 @@ delimiter = ;
 text_qualifier =
 skip_rows = 1
 encoding = utf8
+locale = en_US.UTF-8

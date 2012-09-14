@@ -179,6 +179,15 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 				$fp = fopen($filename, 'r');
 				$delimiter = (empty($parameters['delimiter'])) ? ',' : $parameters['delimiter'];
 				$qualifier = (empty($parameters['text_qualifier'])) ? '"' : $parameters['text_qualifier'];
+
+				    // Set locale, if specific locale is defined
+				$oldLocale = '';
+				if (!empty($parameters['locale'])) {
+						// Get the old locale first, in order to restore it later
+				    $oldLocale = setlocale(LC_ALL, 0);
+				    setlocale(LC_ALL, $parameters['locale']);
+				}
+
 				while ($row = fgetcsv($fp, 0, $delimiter, $qualifier)) {
 					$numData = count($row);
 						// If the charset of the file is not the same as the BE charset,
@@ -193,6 +202,11 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 				fclose($fp);
 				if (TYPO3_DLOG || $this->extConf['debug']) {
 					t3lib_div::devLog('Data from file', $this->extKey, -1, $fileData);
+				}
+
+				    // Reset locale, if necessary
+				if (!empty($oldLocale)) {
+					setlocale(LC_ALL, $oldLocale);
 				}
 
 				// Error: file does not exist
