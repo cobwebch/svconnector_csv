@@ -1,0 +1,5 @@
+filename = EXT:externalimport_tut/res/employees.txt
+delimiter = ;
+text_qualifier =
+skip_rows = 1
+encoding = utf8
