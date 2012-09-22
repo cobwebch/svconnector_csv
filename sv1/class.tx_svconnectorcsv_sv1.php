@@ -152,7 +152,7 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 	 *
 	 * @param array $parameters Parameters for the call
 	 * @throws Exception
-	 * @return string Content of the file
+	 * @return array Content of the file
 	 */
 	protected function query($parameters) {
 		$fileData = array();
