@@ -1,14 +1,14 @@
 <?php
 
-########################################################################
-# Extension Manager/Repository config file for ext "svconnector_csv".
-#
-# Auto generated 23-09-2012 18:38
-#
-# Manual updates:
-# Only the data in the array - everything else is removed by next
-# writing. "version" and "dependencies" must not be touched!
-########################################################################
+/***************************************************************
+ * Extension Manager/Repository config file for ext "svconnector_csv".
+ *
+ * Auto generated 24-01-2013 15:24
+ *
+ * Manual updates:
+ * Only the data in the array - everything else is removed by next
+ * writing. "version" and "dependencies" must not be touched!
+ ***************************************************************/
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 'Connector service - CSV',
@@ -29,7 +29,7 @@ $EM_CONF[$_EXTKEY] = array(
 	'clearCacheOnLoad' => 1,
 	'lockType' => '',
 	'author_company' => '',
-	'version' => '1.2.0',
+	'version' => '1.3.0',
 	'constraints' => array(
 		'depends' => array(
 			'typo3' => '4.5.0-6.0.99',
@@ -40,7 +40,7 @@ $EM_CONF[$_EXTKEY] = array(
 		'suggests' => array(
 		),
 	),
-	'_md5_values_when_last_written' => 'a:12:{s:9:"ChangeLog";s:4:"d48f";s:16:"ext_autoload.php";s:4:"1911";s:21:"ext_conf_template.txt";s:4:"1f2a";s:12:"ext_icon.gif";s:4:"559f";s:17:"ext_localconf.php";s:4:"8c7f";s:13:"locallang.xml";s:4:"81be";s:10:"README.txt";s:4:"dfb5";s:42:"Resources/Public/Samples/Configuration.txt";s:4:"8813";s:14:"doc/manual.pdf";s:4:"87db";s:14:"doc/manual.sxw";s:4:"158e";s:35:"sv1/class.tx_svconnectorcsv_sv1.php";s:4:"e650";s:17:"sv1/locallang.xml";s:4:"e842";}',
+	'_md5_values_when_last_written' => 'a:12:{s:9:"ChangeLog";s:4:"9f77";s:16:"ext_autoload.php";s:4:"1911";s:21:"ext_conf_template.txt";s:4:"1f2a";s:12:"ext_icon.gif";s:4:"559f";s:17:"ext_localconf.php";s:4:"8c7f";s:13:"locallang.xml";s:4:"81be";s:10:"README.txt";s:4:"dfb5";s:42:"Resources/Public/Samples/Configuration.txt";s:4:"8813";s:14:"doc/manual.pdf";s:4:"87db";s:14:"doc/manual.sxw";s:4:"158e";s:35:"sv1/class.tx_svconnectorcsv_sv1.php";s:4:"e650";s:17:"sv1/locallang.xml";s:4:"e842";}',
 	'suggests' => array(
 	),
 );
