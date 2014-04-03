@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2008-2012 Francois Suter (Cobweb) <typo3@cobweb.ch>
+*  (c) 2008-2014 Francois Suter (Cobweb) <typo3@cobweb.ch>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -28,8 +28,6 @@
  * @author		Francois Suter (Cobweb) <typo3@cobweb.ch>
  * @package		TYPO3
  * @subpackage	tx_svconnectorcsv
- *
- * $Id$
  */
 class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 	public $prefixId = 'tx_svconnectorcsv_sv1';		// Same as class name
@@ -46,7 +44,6 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 	 */
 	public function init() {
 		parent::init();
-		$this->lang->includeLLFile('EXT:' . $this->extKey . '/sv1/locallang.xml');
 		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extKey]);
 		return TRUE;
 	}
@@ -159,10 +156,11 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 		}
 			// Check if the file is defined and exists
 		if (empty($parameters['filename'])) {
+			$message = $this->sL('LLL:EXT:' . $this->extKey . '/sv1/locallang.xml:no_file_defined');
 			if (TYPO3_DLOG || $this->extConf['debug']) {
-				t3lib_div::devLog($this->lang->getLL('no_file_defined'), $this->extKey, 3);
+				t3lib_div::devLog($message, $this->extKey, 3);
 			}
-			throw new Exception($this->lang->getLL('no_file_defined'), 1299358179);
+			throw new Exception($message, 1299358179);
 		} else {
 			$filename = t3lib_div::getFileAbsFileName($parameters['filename']);
 			if (file_exists($filename)) {
@@ -170,8 +168,8 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 				if (empty($parameters['encoding'])) {
 					$isSameCharset = TRUE;
 				} else {
-					$encoding = $this->lang->csConvObj->parse_charset($parameters['encoding']);
-					$isSameCharset = $this->lang->charSet == $encoding;
+					$encoding = $this->getCharsetConverter()->parse_charset($parameters['encoding']);
+					$isSameCharset = $this->getCharset() == $encoding;
 				}
 					// Open the file and read it line by line, already interpreted as CSV data
 				$fp = fopen($filename, 'r');
@@ -192,7 +190,7 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 						// convert every input to the proper charset
 					if (!$isSameCharset) {
 						for ($i = 0; $i < $numData; $i++) {
-							$row[$i] = $this->lang->csConvObj->conv($row[$i], $encoding, $this->lang->charSet);
+							$row[$i] = $this->getCharsetConverter()->conv($row[$i], $encoding, $this->getCharset());
 						}
 					}
 					$fileData[] = $row;
@@ -209,10 +207,14 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 
 				// Error: file does not exist
 			} else {
+				$message = sprintf(
+					$this->sL('LLL:EXT:' . $this->extKey . '/sv1/locallang.xml:file_not_found'),
+					$filename
+				);
 				if (TYPO3_DLOG || $this->extConf['debug']) {
-					t3lib_div::devLog(sprintf($this->lang->getLL('file_not_found'), $filename), $this->extKey, 3);
+					t3lib_div::devLog($message, $this->extKey, 3);
 				}
-				throw new Exception(sprintf($this->lang->getLL('file_not_found'), $filename), 1299358355);
+				throw new Exception($message, 1299358355);
 			}
 		}
 			// Process the result if any hook is registered
