@@ -35,7 +35,7 @@ problem or suggest features
 Keeping the developer happy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Every encouragement keeps the developer ticking, so dont' hesitate
+Every encouragement keeps the developer ticking, so don't hesitate
 to send thanks or share your enthusiasm about the extension.
 If you really want to give something
 back, you may consider my Amazon wish list:
