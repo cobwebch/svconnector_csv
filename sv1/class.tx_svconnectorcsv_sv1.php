@@ -188,7 +188,14 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 					setlocale(LC_ALL, $parameters['locale']);
 				}
 
+				$isFirstRow = TRUE;
 				while ($row = fgetcsv($fp, 0, $delimiter, $qualifier)) {
+					// In the first row, remove UTF-8 Byte Order Mark if applicable
+					if ($isFirstRow) {
+						$byteOrderMark = pack('H*','EFBBBF');
+						$row[0] = preg_replace('/^' . $byteOrderMark . '/', '', $row[0]);
+						$isFirstRow = FALSE;
+					}
 					$numData = count($row);
 					// If the row is an array with a single NULL entry, it corresponds to a blank line
 					// and we want to skip it (see note in http://php.net/manual/en/function.fgetcsv.php#refsect1-function.fgetcsv-returnvalues)
