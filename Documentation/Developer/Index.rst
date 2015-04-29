@@ -39,7 +39,7 @@ in return. For a PHP array:
 .. code-block:: php
 
 	$parameters = array(
-		'file' => 'path/to/your/file',
+		'filename' => 'path/to/your/file',
 		'delimiter' => “\t”,
 		'text_qualifier' => '',
 		'encoding' => 'utf-8',

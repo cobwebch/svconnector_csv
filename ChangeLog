@@ -1,3 +1,7 @@
+2015-04-29 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Corrected wrong code sample in documentation, resolves #66596 (thanks to Martin Hummer)
+
 2014-06-05 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Released version 1.5.0, resolves #57767
