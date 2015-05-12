@@ -154,7 +154,7 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 		if (TYPO3_DLOG || $this->extConf['debug']) {
 			t3lib_div::devLog('Call parameters', $this->extKey, -1, $parameters);
 		}
-			// Check if the file is defined and exists
+		// Check if the file is defined and exists
 		if (empty($parameters['filename'])) {
 			$message = $this->sL('LLL:EXT:' . $this->extKey . '/sv1/locallang.xml:no_file_defined');
 			if (TYPO3_DLOG || $this->extConf['debug']) {
@@ -164,30 +164,34 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 		} else {
 			$filename = t3lib_div::getFileAbsFileName($parameters['filename']);
 			if (file_exists($filename)) {
-					// Check if the current (BE) charset is the same as the file encoding
+				// Force auto-detection of line endings
+				ini_set('auto_detect_line_endings', TRUE);
+
+				// Check if the current (BE) charset is the same as the file encoding
 				if (empty($parameters['encoding'])) {
 					$isSameCharset = TRUE;
 				} else {
 					$encoding = $this->getCharsetConverter()->parse_charset($parameters['encoding']);
 					$isSameCharset = $this->getCharset() == $encoding;
 				}
-					// Open the file and read it line by line, already interpreted as CSV data
+
+				// Open the file and read it line by line, already interpreted as CSV data
 				$fp = fopen($filename, 'r');
 				$delimiter = (empty($parameters['delimiter'])) ? ',' : $parameters['delimiter'];
 				$qualifier = (empty($parameters['text_qualifier'])) ? '"' : $parameters['text_qualifier'];
 
-				    // Set locale, if specific locale is defined
+				// Set locale, if specific locale is defined
 				$oldLocale = '';
 				if (!empty($parameters['locale'])) {
-						// Get the old locale first, in order to restore it later
-				    $oldLocale = setlocale(LC_ALL, 0);
-				    setlocale(LC_ALL, $parameters['locale']);
+					// Get the old locale first, in order to restore it later
+					$oldLocale = setlocale(LC_ALL, 0);
+					setlocale(LC_ALL, $parameters['locale']);
 				}
 
 				while ($row = fgetcsv($fp, 0, $delimiter, $qualifier)) {
 					$numData = count($row);
-						// If the charset of the file is not the same as the BE charset,
-						// convert every input to the proper charset
+					// If the charset of the file is not the same as the BE charset,
+					// convert every input to the proper charset
 					if (!$isSameCharset) {
 						for ($i = 0; $i < $numData; $i++) {
 							$row[$i] = $this->getCharsetConverter()->conv($row[$i], $encoding, $this->getCharset());
@@ -200,12 +204,12 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 					t3lib_div::devLog('Data from file', $this->extKey, -1, $fileData);
 				}
 
-				    // Reset locale, if necessary
+				// Reset locale, if necessary
 				if (!empty($oldLocale)) {
 					setlocale(LC_ALL, $oldLocale);
 				}
 
-				// Error: file does not exist
+			// Error: file does not exist
 			} else {
 				$message = sprintf(
 					$this->sL('LLL:EXT:' . $this->extKey . '/sv1/locallang.xml:file_not_found'),
@@ -217,19 +221,17 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 				throw new Exception($message, 1299358355);
 			}
 		}
-			// Process the result if any hook is registered
+		// Process the result if any hook is registered
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processResponse'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processResponse'] as $className) {
 				$processor = &t3lib_div::getUserObj($className);
 				$fileData = $processor->processResponse($fileData, $this);
 			}
 		}
-			// Return the result
+		// Return the result
 		return $fileData;
 	}
 }
-
-
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/svconnector_csv/sv1/class.tx_svconnectorcsv_sv1.php']) {
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/svconnector_csv/sv1/class.tx_svconnectorcsv_sv1.php']);
