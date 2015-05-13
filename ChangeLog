@@ -1,6 +1,7 @@
 2015-05-13 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected handling of non-Unix line endings, resolves #66899 (thanks to Simon Schaufelberger)
+	* Released version 1.5.1, resolves #66949
 
 2015-04-29 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
