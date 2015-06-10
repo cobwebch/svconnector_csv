@@ -1,3 +1,7 @@
+2015-06-10 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added unit tests, resolves #67387
+
 2015-05-13 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected handling of non-Unix line endings, resolves #66899 (thanks to Simon Schaufelberger)
