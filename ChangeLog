@@ -1,6 +1,7 @@
 2015-06-10 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added unit tests, resolves #67387
+	* Added check for catching and discarding empty lines, resolves #67386
 
 2015-05-13 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 

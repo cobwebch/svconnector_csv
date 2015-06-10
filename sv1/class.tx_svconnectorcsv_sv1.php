@@ -190,6 +190,11 @@ class tx_svconnectorcsv_sv1 extends tx_svconnector_base {
 
 				while ($row = fgetcsv($fp, 0, $delimiter, $qualifier)) {
 					$numData = count($row);
+					// If the row is an array with a single NULL entry, it corresponds to a blank line
+					// and we want to skip it (see note in http://php.net/manual/en/function.fgetcsv.php#refsect1-function.fgetcsv-returnvalues)
+					if ($numData === 1 && current($row) === NULL) {
+						continue;
+					}
 					// If the charset of the file is not the same as the BE charset,
 					// convert every input to the proper charset
 					if (!$isSameCharset) {

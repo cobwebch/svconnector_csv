@@ -72,7 +72,7 @@ class tx_svconnectorcsv_Test extends tx_phpunit_testcase {
 				)
 			),
 			// Note: last blank line in any file is always ignored by fgetcsv()
-			// Additional blank lines result in array with single NULL entry
+			// Additional blank lines result in array with single NULL entry, which are filtered out by the connector service
 			'data with blank lines' => array(
 				'parameters' => array(
 					'filename' => 'EXT:svconnector_csv/Tests/Unit/Fixtures/BlankLines.csv',
@@ -87,9 +87,7 @@ class tx_svconnectorcsv_Test extends tx_phpunit_testcase {
 					array(
 						'bar',
 						'42'
-					),
-					array(NULL),
-					array(NULL)
+					)
 				)
 			)
 		);
