@@ -4,10 +4,10 @@
 
 ---
 conf.py:
-  copyright: 2009-2014
+  copyright: 2009-2015
   project: CSV Connector Service
   version: 1.5
-  release: 1.5.1
+  release: 1.5.2
   latex_documents:
   - - Index
     - svconnector_csv.tex
