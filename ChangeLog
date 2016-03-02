@@ -1,6 +1,7 @@
 2016-03-02 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected bug with files starting with a BOM, resolves #54778
+	* Released version 1.5.3, resolves #73877
 
 2015-06-11 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
