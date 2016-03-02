@@ -27,7 +27,7 @@ CSV Connector Service
 		  CSV, data import, fetch data
 
 	:Copyright:
-		2009-2014
+		2009-2016
 
 	:Author:
 		  François Suter (Cobweb)
