@@ -1,2 +1,2 @@
-# cat=basic/enable/; type=boolean; label=LLL:EXT:svconnector_csv/locallang.xml:config_debug
+# cat=basic/enable/; type=boolean; label=LLL:EXT:svconnector_csv/Resources/Private/Language/locallang.xlf:config_debug
 debug = 0

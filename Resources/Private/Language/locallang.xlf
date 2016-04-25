@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2016-04-25T16:05:11Z" product-name="svconnector_csv">
+		<header/>
+		<body>
+			<trans-unit id="config_debug" xml:space="preserve">
+				<source>Debug: Check to turn on debugging to the Dev Log. Debugging also takes place if TYPO3_DLOG is true. Requires devlog or similar extension.</source>
+			</trans-unit>
+			<trans-unit id="no_file_defined" xml:space="preserve">
+				<source>No file defined for import.</source>
+			</trans-unit>
+			<trans-unit id="file_not_found" xml:space="preserve">
+				<source>Import file not found: %s</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
