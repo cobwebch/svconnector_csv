@@ -14,6 +14,7 @@ namespace Cobweb\SvconnectorCsv\Service;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\Svconnector\Exception\SourceErrorException;
 use Cobweb\Svconnector\Service\ConnectorBase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -146,7 +147,7 @@ class ConnectorCsv extends ConnectorBase
      *       as it does not make sense in this case
      *
      * @param array $parameters Parameters for the call
-     * @throws \Exception
+     * @throws SourceErrorException
      * @return array Content of the file
      */
     protected function query($parameters)
@@ -161,7 +162,10 @@ class ConnectorCsv extends ConnectorBase
             if (TYPO3_DLOG || $this->extConf['debug']) {
                 GeneralUtility::devLog($message, $this->extKey, 3);
             }
-            throw new \Exception($message, 1299358179);
+            throw new SourceErrorException(
+                    $message,
+                    1299358179
+            );
         } else {
             $filename = GeneralUtility::getFileAbsFileName($parameters['filename']);
             if (file_exists($filename)) {
@@ -170,6 +174,7 @@ class ConnectorCsv extends ConnectorBase
 
                 // Check if the current (BE) charset is the same as the file encoding
                 if (empty($parameters['encoding'])) {
+                    $encoding = '';
                     $isSameCharset = true;
                 } else {
                     $encoding = $this->getCharsetConverter()->parse_charset($parameters['encoding']);
@@ -231,7 +236,10 @@ class ConnectorCsv extends ConnectorBase
                 if (TYPO3_DLOG || $this->extConf['debug']) {
                     GeneralUtility::devLog($message, $this->extKey, 3);
                 }
-                throw new \Exception($message, 1299358355);
+                throw new SourceErrorException(
+                        $message,
+                        1299358355
+                );
             }
         }
         // Process the result if any hook is registered

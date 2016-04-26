@@ -15,6 +15,7 @@ namespace Cobweb\SvconnectorCsv\Unit\Tests;
  */
 
 use Cobweb\Svconnector\Domain\Repository\ConnectorRepository;
+use Cobweb\Svconnector\Exception\SourceErrorException;
 use TYPO3\CMS\Core\Tests\BaseTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -105,7 +106,7 @@ class ConnectorCsvTest extends BaseTestCase
      * @test
      * @dataProvider sourceDataProvider
      */
-    public function readCsvFileIntoArray($parameters, $result)
+    public function readingCsvFileIntoArray($parameters, $result)
     {
         /** @var ConnectorRepository $connectorRepository */
         $connectorRepository = GeneralUtility::makeInstance(ConnectorRepository::class);
@@ -114,16 +115,25 @@ class ConnectorCsvTest extends BaseTestCase
             $data = $serviceObject->fetchArray($parameters);
             self::assertSame($result, $data);
         }
-            // Catch specific test framework failure exception, because we also need to catch connector exceptions
-            // @todo: introduce a specific connector exception and invert the logic (catch connector exception, let other bubble up)
-        catch (\PHPUnit_Framework_ExpectationFailedException $e) {
-            self::fail(
-                    $e->getMessage()
-            );
-        } catch (\Exception $e) {
+        catch (SourceErrorException $e) {
             self::markTestSkipped(
                     $e->getMessage()
             );
         }
+    }
+
+    /**
+     * @test
+     * @expectedException \Cobweb\Svconnector\Exception\SourceErrorException
+     */
+    public function readingUnknownFileThrowsException() {
+        /** @var ConnectorRepository $connectorRepository */
+        $connectorRepository = GeneralUtility::makeInstance(ConnectorRepository::class);
+            $serviceObject = $connectorRepository->findServiceByKey('tx_svconnectorcsv_sv1');
+            $serviceObject->fetchArray(
+                    array(
+                        'filename' => 'foobar.txt'
+                    )
+            );
     }
 }

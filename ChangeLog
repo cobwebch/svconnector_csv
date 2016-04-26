@@ -1,3 +1,7 @@
+2016-04-26 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Used new Connector exceptions and updated unit tests, resolves #75924
+
 2016-03-02 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected bug with files starting with a BOM, resolves #54778
