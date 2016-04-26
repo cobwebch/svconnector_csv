@@ -1,4 +1,4 @@
-filename = EXT:externalimport_tut/res/employees.txt
+filename = EXT:svconnector_csv/Tests/Unit/Fixtures/AsteroidData_nobom.csv
 delimiter = ;
 text_qualifier =
 skip_rows = 1

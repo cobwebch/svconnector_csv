@@ -1,6 +1,7 @@
 2016-04-26 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Used new Connector exceptions and updated unit tests, resolves #75924
+	* Changed sample configuration to use test file, resolves #75925
 
 2016-03-02 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
