@@ -1,7 +1,15 @@
+2016-05-02 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Released version 2.0.0, resolves #76004
+
 2016-04-26 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Used new Connector exceptions and updated unit tests, resolves #75924
 	* Changed sample configuration to use test file, resolves #75925
+
+2016-04-25 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Refactored for TYPO3 CMS 7, resolves #75914
 
 2016-03-02 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 

@@ -77,6 +77,6 @@ The :code:`fetchRaw()` method returns a two-dimensional array with one
 entry per line in the file and in each of these an entry per column.
 The :code:`fetchXML()` method returns the array created by
 :code:`fetchArray()` transformed to XML using
-:code:`\TYPO3\CMS\Core\Utility\GeneralUtility::array2xml\_cs()`.
+:code:`\TYPO3\CMS\Core\Utility\GeneralUtility::array2xml_cs()`.
 
 
