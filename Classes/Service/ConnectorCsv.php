@@ -79,7 +79,14 @@ class ConnectorCsv extends ConnectorBase
         // Get the data as an array
         $result = $this->fetchArray($parameters);
         // Transform result to XML
-        $xml = GeneralUtility::array2xml_cs($result);
+        $xml = GeneralUtility::array2xml($result);
+        // Check if the current (BE) charset is the same as the file encoding
+        if (empty($parameters['encoding'])) {
+            $encoding = 'utf-8';
+        } else {
+            $encoding = $this->getCharsetConverter()->parse_charset($parameters['encoding']);
+        }
+        $xml = '<?xml version="1.0" encoding="' . htmlspecialchars($encoding) . '" standalone="yes" ?>' . LF . $xml;
         // Implement post-processing hook
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processXML'])) {
             foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processXML'] as $className) {
