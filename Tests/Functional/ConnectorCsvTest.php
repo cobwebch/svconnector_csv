@@ -26,12 +26,18 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * @package TYPO3
  * @subpackage tx_svconnector_csv
  */
-class ConnectorCsvTest extends BaseTestCase
+class ConnectorCsvTest extends \Nimut\TestingFramework\TestCase\FunctionalTestCase
 {
     /**
      * @var array List of globals to exclude (contain closures which cannot be serialized)
-     */
     protected $backupGlobalsBlacklist = array('TYPO3_LOADED_EXT', 'TYPO3_CONF_VARS');
+     */
+
+    public function setUp()
+    {
+        $this->testExtensionsToLoad = ['svconnector', 'svconnector_csv'];
+        parent::setUp();
+    }
 
     /**
      * Provides references to CSV files to read and expected output.
