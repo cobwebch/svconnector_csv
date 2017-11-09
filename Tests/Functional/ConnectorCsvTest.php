@@ -1,4 +1,5 @@
 <?php
+
 namespace Cobweb\SvconnectorCsv\Unit\Tests;
 
 /*
@@ -16,7 +17,7 @@ namespace Cobweb\SvconnectorCsv\Unit\Tests;
 
 use Cobweb\Svconnector\Domain\Repository\ConnectorRepository;
 use Cobweb\Svconnector\Exception\SourceErrorException;
-use TYPO3\CMS\Core\Tests\BaseTestCase;
+use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -26,17 +27,24 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * @package TYPO3
  * @subpackage tx_svconnector_csv
  */
-class ConnectorCsvTest extends \Nimut\TestingFramework\TestCase\FunctionalTestCase
+class ConnectorCsvTest extends FunctionalTestCase
 {
+    protected $testExtensionsToLoad = [
+            'typo3conf/ext/svconnector',
+            'typo3conf/ext/svconnector_csv',
+    ];
+
     /**
-     * @var array List of globals to exclude (contain closures which cannot be serialized)
-    protected $backupGlobalsBlacklist = array('TYPO3_LOADED_EXT', 'TYPO3_CONF_VARS');
+     * @var \Cobweb\SvconnectorFeed\Service\ConnectorFeed
      */
+    protected $subject;
 
     public function setUp()
     {
-        $this->testExtensionsToLoad = ['svconnector', 'svconnector_csv'];
         parent::setUp();
+        /** @var ConnectorRepository $connectorRepository */
+        $connectorRepository = GeneralUtility::makeInstance(ConnectorRepository::class);
+        $this->subject = $connectorRepository->findServiceByKey('tx_svconnectorcsv_sv1');
     }
 
     /**
@@ -49,7 +57,7 @@ class ConnectorCsvTest extends \Nimut\TestingFramework\TestCase\FunctionalTestCa
         $data = array(
                 'clean data, no header row' => array(
                         'parameters' => array(
-                                'filename' => 'EXT:svconnector_csv/Tests/Unit/Fixtures/CleanDataNoHeaderRow.csv',
+                                'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/CleanDataNoHeaderRow.csv',
                                 'delimiter' => ';',
                                 'skip_rows' => 0
                         ),
@@ -66,7 +74,7 @@ class ConnectorCsvTest extends \Nimut\TestingFramework\TestCase\FunctionalTestCa
                 ),
                 'clean data, with header row' => array(
                         'parameters' => array(
-                                'filename' => 'EXT:svconnector_csv/Tests/Unit/Fixtures/CleanDataWithHeaderRow.csv',
+                                'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/CleanDataWithHeaderRow.csv',
                                 'delimiter' => ';',
                                 'skip_rows' => 1
                         ),
@@ -85,7 +93,7 @@ class ConnectorCsvTest extends \Nimut\TestingFramework\TestCase\FunctionalTestCa
                 // Additional blank lines result in array with single NULL entry, which are filtered out by the connector service
                 'data with blank lines' => array(
                         'parameters' => array(
-                                'filename' => 'EXT:svconnector_csv/Tests/Unit/Fixtures/BlankLines.csv',
+                                'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/BlankLines.csv',
                                 'delimiter' => ';',
                                 'skip_rows' => 0
                         ),
@@ -97,6 +105,40 @@ class ConnectorCsvTest extends \Nimut\TestingFramework\TestCase\FunctionalTestCa
                                 array(
                                         'bar',
                                         '42'
+                                )
+                        )
+                ),
+                'empty and missing columns' => array(
+                        'parameters' => array(
+                                'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/MissingData.csv',
+                                'delimiter' => ';',
+                                'skip_rows' => 0
+                        ),
+                        'result' => array(
+                                array(
+                                        'foo',
+                                        '12',
+                                        'aaa'
+                                ),
+                                // Missing columns at the end are totally missing in the result
+                                array(
+                                        'bar',
+                                        '42'
+                                ),
+                                // Missing columns before the last one are returned as empty strings...
+                                array(
+                                        'baz',
+                                        '',
+                                        'bbb'
+                                ),
+                                // ...but spaces are preserved
+                                array(
+                                        ' ',
+                                        '',
+                                        'ccc'
+                                ),
+                                array(
+                                        '36'
                                 )
                         )
                 )
@@ -114,32 +156,20 @@ class ConnectorCsvTest extends \Nimut\TestingFramework\TestCase\FunctionalTestCa
      */
     public function readingCsvFileIntoArray($parameters, $result)
     {
-        /** @var ConnectorRepository $connectorRepository */
-        $connectorRepository = GeneralUtility::makeInstance(ConnectorRepository::class);
-        try {
-            $serviceObject = $connectorRepository->findServiceByKey('tx_svconnectorcsv_sv1');
-            $data = $serviceObject->fetchArray($parameters);
-            self::assertSame($result, $data);
-        }
-        catch (SourceErrorException $e) {
-            self::markTestSkipped(
-                    $e->getMessage()
-            );
-        }
+        $data = $this->subject->fetchArray($parameters);
+        self::assertSame($result, $data);
     }
 
     /**
      * @test
      * @expectedException \Cobweb\Svconnector\Exception\SourceErrorException
      */
-    public function readingUnknownFileThrowsException() {
-        /** @var ConnectorRepository $connectorRepository */
-        $connectorRepository = GeneralUtility::makeInstance(ConnectorRepository::class);
-            $serviceObject = $connectorRepository->findServiceByKey('tx_svconnectorcsv_sv1');
-            $serviceObject->fetchArray(
-                    array(
+    public function readingUnknownFileThrowsException()
+    {
+        $this->subject->fetchArray(
+                array(
                         'filename' => 'foobar.txt'
-                    )
-            );
+                )
+        );
     }
 }
