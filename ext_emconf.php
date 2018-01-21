@@ -22,17 +22,17 @@ $EM_CONF[$_EXTKEY] = array (
   'clearCacheOnLoad' => 1,
   'author_company' => '',
   'version' => '2.1.0',
-  'constraints' => 
+  'constraints' =>
   array (
-    'depends' => 
+    'depends' =>
     array (
       'typo3' => '7.6.0-8.99.99',
-      'svconnector' => '3.1.0-0.0.0',
+      'svconnector' => '3.2.0-0.0.0',
     ),
-    'conflicts' => 
+    'conflicts' =>
     array (
     ),
-    'suggests' => 
+    'suggests' =>
     array (
     ),
   ),

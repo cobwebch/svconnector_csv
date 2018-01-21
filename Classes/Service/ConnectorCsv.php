@@ -16,6 +16,7 @@ namespace Cobweb\SvconnectorCsv\Service;
 
 use Cobweb\Svconnector\Exception\SourceErrorException;
 use Cobweb\Svconnector\Service\ConnectorBase;
+use Cobweb\Svconnector\Utility\FileUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -147,15 +148,15 @@ class ConnectorCsv extends ConnectorBase
     }
 
     /**
-     * This method reads the content of the file defined in the parameters
-     * and returns it as a single string
+     * Reads the content of the file defined in the parameters and returns it as an array.
      *
      * NOTE: this method does not implement the "processParameters" hook,
      *       as it does not make sense in this case
      *
      * @param array $parameters Parameters for the call
-     * @throws SourceErrorException
      * @return array Content of the file
+     * @throws SourceErrorException
+     * @throws \Exception
      */
     protected function query($parameters)
     {
@@ -165,7 +166,7 @@ class ConnectorCsv extends ConnectorBase
         }
         // Check if the file is defined and exists
         if (empty($parameters['filename'])) {
-            $message = $this->sL('LLL:EXT:' . $this->extKey . '/Resources/Private/Language/locallang.xlf:no_file_defined');
+            $message = $this->sL('LLL:EXT:svconnector_csv/Resources/Private/Language/locallang.xlf:no_file_defined');
             if (TYPO3_DLOG || $this->extConf['debug']) {
                 GeneralUtility::devLog($message, $this->extKey, 3);
             }
@@ -173,82 +174,76 @@ class ConnectorCsv extends ConnectorBase
                     $message,
                     1299358179
             );
-        } else {
-            $filename = GeneralUtility::getFileAbsFileName($parameters['filename']);
-            if (file_exists($filename)) {
-                // Force auto-detection of line endings
-                ini_set('auto_detect_line_endings', true);
-
-                // Check if the current (BE) charset is the same as the file encoding
-                if (empty($parameters['encoding'])) {
-                    $encoding = '';
-                    $isSameCharset = true;
-                } else {
-                    $encoding = $this->getCharsetConverter()->parse_charset($parameters['encoding']);
-                    $isSameCharset = $this->getCharset() === $encoding;
-                }
-
-                // Open the file and read it line by line, already interpreted as CSV data
-                $fp = fopen($filename, 'r');
-                $delimiter = (empty($parameters['delimiter'])) ? ',' : $parameters['delimiter'];
-                $qualifier = (empty($parameters['text_qualifier'])) ? '"' : $parameters['text_qualifier'];
-
-                // Set locale, if specific locale is defined
-                $oldLocale = '';
-                if (!empty($parameters['locale'])) {
-                    // Get the old locale first, in order to restore it later
-                    $oldLocale = setlocale(LC_ALL, 0);
-                    setlocale(LC_ALL, $parameters['locale']);
-                }
-
-                $isFirstRow = true;
-                while ($row = fgetcsv($fp, 0, $delimiter, $qualifier)) {
-                    // In the first row, remove UTF-8 Byte Order Mark if applicable
-                    if ($isFirstRow) {
-                        $byteOrderMark = pack('H*', 'EFBBBF');
-                        $row[0] = preg_replace('/^' . $byteOrderMark . '/', '', $row[0]);
-                        $isFirstRow = false;
-                    }
-                    $numData = count($row);
-                    // If the row is an array with a single NULL entry, it corresponds to a blank line
-                    // and we want to skip it (see note in http://php.net/manual/en/function.fgetcsv.php#refsect1-function.fgetcsv-returnvalues)
-                    if ($numData === 1 && current($row) === null) {
-                        continue;
-                    }
-                    // If the charset of the file is not the same as the BE charset,
-                    // convert every input to the proper charset
-                    if (!$isSameCharset) {
-                        for ($i = 0; $i < $numData; $i++) {
-                            $row[$i] = $this->getCharsetConverter()->conv($row[$i], $encoding, $this->getCharset());
-                        }
-                    }
-                    $fileData[] = $row;
-                }
-                fclose($fp);
-                if (TYPO3_DLOG || $this->extConf['debug']) {
-                    GeneralUtility::devLog('Data from file', $this->extKey, -1, $fileData);
-                }
-
-                // Reset locale, if necessary
-                if (!empty($oldLocale)) {
-                    setlocale(LC_ALL, $oldLocale);
-                }
-
-                // Error: file does not exist
-            } else {
-                $message = sprintf(
-                        $this->sL('LLL:EXT:' . $this->extKey . '/Resources/Private/Language/locallang.xlf:file_not_found'),
-                        $parameters['filename']
-                );
-                if (TYPO3_DLOG || $this->extConf['debug']) {
-                    GeneralUtility::devLog($message, $this->extKey, 3);
-                }
-                throw new SourceErrorException(
-                        $message,
-                        1299358355
-                );
-            }
         }
+
+        // Check if the current (BE) charset is the same as the file encoding
+        if (empty($parameters['encoding'])) {
+            $encoding = '';
+            $isSameCharset = true;
+        } else {
+            $encoding = $this->getCharsetConverter()->parse_charset($parameters['encoding']);
+            $isSameCharset = $this->getCharset() === $encoding;
+        }
+
+        /** @var FileUtility $fileUtility */
+        $fileUtility = GeneralUtility::makeInstance(FileUtility::class);
+        $fileContent =  $fileUtility->getFileContent($parameters['filename']);
+        if ($fileContent === false) {
+            $error = $fileUtility->getError();
+            $message = sprintf(
+                    $this->sL('LLL:EXT:svconnector_csv/Resources/Private/Language/locallang.xlf:file_not_found_reason'),
+                    $parameters['filename'],
+                    $error
+            );
+            if (TYPO3_DLOG || $this->extConf['debug']) {
+                GeneralUtility::devLog($message, $this->extKey, 3);
+            }
+            throw new SourceErrorException(
+                    $message,
+                    1299358355
+            );
+        }
+
+        // Split the file content into lines
+        $lines =  preg_split("/\r\n|\n|\r/", $fileContent);
+
+        $delimiter = (empty($parameters['delimiter'])) ? ',' : $parameters['delimiter'];
+        $qualifier = (empty($parameters['text_qualifier'])) ? '"' : $parameters['text_qualifier'];
+
+        // Set locale, if specific locale is defined
+        $oldLocale = '';
+        if (!empty($parameters['locale'])) {
+            // Get the old locale first, in order to restore it later
+            $oldLocale = setlocale(LC_ALL, 0);
+            setlocale(LC_ALL, $parameters['locale']);
+        }
+
+        foreach ($lines as $line) {
+            $row = str_getcsv($line, $delimiter, $qualifier);
+            $numData = count($row);
+            // If the row is an array with a single NULL entry, it corresponds to a blank line
+            // and we want to skip it (see note in http://php.net/manual/en/function.fgetcsv.php#refsect1-function.fgetcsv-returnvalues)
+            if ($numData === 1 && current($row) === null) {
+                continue;
+            }
+            // If the charset of the file is not the same as the BE charset,
+            // convert every input to the proper charset
+            if (!$isSameCharset) {
+                for ($i = 0; $i < $numData; $i++) {
+                    $row[$i] = $this->getCharsetConverter()->conv($row[$i], $encoding, $this->getCharset());
+                }
+            }
+            $fileData[] = $row;
+        }
+        if (TYPO3_DLOG || $this->extConf['debug']) {
+            GeneralUtility::devLog('Data from file', $this->extKey, -1, $fileData);
+        }
+
+        // Reset locale, if necessary
+        if (!empty($oldLocale)) {
+            setlocale(LC_ALL, $oldLocale);
+        }
+
         // Process the result if any hook is registered
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processResponse'])) {
             foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processResponse'] as $className) {

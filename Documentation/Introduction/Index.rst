@@ -12,10 +12,9 @@ Introduction
 ------------
 
 This extension implements a specific connector service for reading
-flat files, in particular in CSV format. Although connector services
-were originally designed to connect to remote sources, using them to
-read local flat files provides a developer with a standardized way of
-accessing such files.
+flat files, in particular in CSV format. Although PHP provides standard
+functions for reading flat files, using a connector services
+provides a developer with a standardized way of accessing such files.
 
 
 .. _support:
@@ -27,7 +26,7 @@ If you have any questions about this extension, please ask them in the
 TYPO3 English mailing list, so that others can benefit from the
 answers. Please use the bug tracker on forge.typo3.org to report
 problem or suggest features
-(http://forge.typo3.org/projects/extension-svconnector\_csv/issues).
+(https://github.com/cobwebch/svconnector_csv/issues).
 
 
 .. _happy-developer:

@@ -55,9 +55,26 @@ class ConnectorCsvTest extends FunctionalTestCase
     public function sourceDataProvider()
     {
         $data = array(
-                'clean data, no header row' => array(
+                'clean data, no header row, Unix line endings' => array(
                         'parameters' => array(
                                 'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/CleanDataNoHeaderRow.csv',
+                                'delimiter' => ';',
+                                'skip_rows' => 0
+                        ),
+                        'result' => array(
+                                array(
+                                        'foo',
+                                        '12'
+                                ),
+                                array(
+                                        'bar',
+                                        '42'
+                                )
+                        )
+                ),
+                'clean data, no header row, Windows line endings' => array(
+                        'parameters' => array(
+                                'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/CleanDataNoHeaderRowWindowsLineEndings.csv',
                                 'delimiter' => ';',
                                 'skip_rows' => 0
                         ),

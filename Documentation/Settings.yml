@@ -14,6 +14,10 @@ conf.py:
     - CSV Connector Service
     - Francois Suter
     - manual
+  intersphinx_mapping:
+    svconnector:
+    - http://docs.typo3.org/typo3cms/extensions/svconnector/
+    - null
   latex_elements:
     papersize: a4paper
     pointsize: 10pt
