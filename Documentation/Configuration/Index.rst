@@ -20,6 +20,7 @@ parameters:
 | filename        | string        | This is the name of the file to read. The reference to the file can           |                  |
 |                 |               | use any of the following syntaxes:                                            |                  |
 |                 |               |                                                                               |                  |
+|                 |               | - absolute file path: :file:`/var/foo/web/fileadmin/import/bar.csv`           |                  |
 |                 |               | - file path relative to the TYPO3 root:                                       |                  |
 |                 |               |   :file:`fileadmin/import/foo.csv`                                            |                  |
 |                 |               | - file path using :code:`EXT:`:                                               |                  |
