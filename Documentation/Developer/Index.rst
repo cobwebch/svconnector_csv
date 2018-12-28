@@ -17,7 +17,7 @@ easy task. The first step is to get the proper service object:
 .. code-block:: php
 
 	$services = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::findService('connector', 'csv');
-	if ($services === FALSE) {
+	if ($services === false) {
 		// Issue an error
 	} else {
 		$connector = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstanceService('connector', 'csv');
@@ -38,13 +38,13 @@ in return. For a PHP array:
 
 .. code-block:: php
 
-	$parameters = array(
+	$parameters = [
 		'filename' => 'path/to/your/file',
 		'delimiter' => “\t”,
 		'text_qualifier' => '',
 		'encoding' => 'utf-8',
 		'skip_rows' => 1,
-	);
+	];
 	$data = $connector->fetchArray($parameters);
 
 In this example we declare the file as using tabs as delimiter and no

@@ -83,30 +83,30 @@ same. If the encoding parameter is left empty, no conversion takes place.
 
    .. code-block:: php
 
-		'result' => array(
-			array(
+		'result' => [
+			[
 				'foo',
 				'12',
 				'aaa'
-			),
+			],
 			// Missing columns at the end are totally missing in the result
-			array(
+			[
 				'bar',
 				'42'
-			),
+			],
 			// Missing columns before the last one are returned as empty strings...
-			array(
+			[
 				'baz',
 				'',
 				'bbb'
-			),
+			],
 			// ...but spaces are preserved
-			array(
+			[
 				' ',
 				'',
 				'ccc'
-			),
-			array(
+			],
+			[
 				'36'
-			)
+			]
 		)
