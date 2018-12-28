@@ -9,7 +9,7 @@ if (!defined('TYPO3_MODE')) {
         'connector',
         // Service key
         'tx_svconnectorcsv_sv1',
-        array(
+        [
                 'title' => 'CSV connector',
                 'description' => 'Connector service for reading CSV files or other flat files',
 
@@ -23,5 +23,5 @@ if (!defined('TYPO3_MODE')) {
                 'exec' => '',
 
                 'className' => \Cobweb\SvconnectorCsv\Service\ConnectorCsv::class
-        )
+        ]
 );

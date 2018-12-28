@@ -1,4 +1,4 @@
-filename = EXT:svconnector_csv/Tests/Unit/Fixtures/AsteroidData_nobom.csv
+filename = EXT:svconnector_csv/Tests/Functional/Fixtures/AsteroidData_nobom.csv
 delimiter = ;
 text_qualifier =
 skip_rows = 1

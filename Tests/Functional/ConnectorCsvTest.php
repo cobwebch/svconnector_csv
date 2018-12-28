@@ -16,7 +16,6 @@ namespace Cobweb\SvconnectorCsv\Unit\Tests;
  */
 
 use Cobweb\Svconnector\Domain\Repository\ConnectorRepository;
-use Cobweb\Svconnector\Exception\SourceErrorException;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -52,114 +51,114 @@ class ConnectorCsvTest extends FunctionalTestCase
      *
      * @return array
      */
-    public function sourceDataProvider()
+    public function sourceDataProvider(): array
     {
-        $data = array(
-                'clean data, no header row, Unix line endings' => array(
-                        'parameters' => array(
+        $data = [
+                'clean data, no header row, Unix line endings' => [
+                        'parameters' => [
                                 'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/CleanDataNoHeaderRow.csv',
                                 'delimiter' => ';',
                                 'skip_rows' => 0
-                        ),
-                        'result' => array(
-                                array(
+                        ],
+                        'result' => [
+                                [
                                         'foo',
                                         '12'
-                                ),
-                                array(
+                                ],
+                                [
                                         'bar',
                                         '42'
-                                )
-                        )
-                ),
-                'clean data, no header row, Windows line endings' => array(
-                        'parameters' => array(
+                                ]
+                        ]
+                ],
+                'clean data, no header row, Windows line endings' => [
+                        'parameters' => [
                                 'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/CleanDataNoHeaderRowWindowsLineEndings.csv',
                                 'delimiter' => ';',
                                 'skip_rows' => 0
-                        ),
-                        'result' => array(
-                                array(
+                        ],
+                        'result' => [
+                                [
                                         'foo',
                                         '12'
-                                ),
-                                array(
+                                ],
+                                [
                                         'bar',
                                         '42'
-                                )
-                        )
-                ),
-                'clean data, with header row' => array(
-                        'parameters' => array(
+                                ]
+                        ]
+                ],
+                'clean data, with header row' => [
+                        'parameters' => [
                                 'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/CleanDataWithHeaderRow.csv',
                                 'delimiter' => ';',
                                 'skip_rows' => 1
-                        ),
-                        'result' => array(
-                                array(
+                        ],
+                        'result' => [
+                                [
                                         'name' => 'foo',
                                         'code' => '12'
-                                ),
-                                array(
+                                ],
+                                [
                                         'name' => 'bar',
                                         'code' => '42'
-                                )
-                        )
-                ),
+                                ]
+                        ]
+                ],
                 // Note: last blank line in any file is always ignored by fgetcsv()
                 // Additional blank lines result in array with single NULL entry, which are filtered out by the connector service
-                'data with blank lines' => array(
-                        'parameters' => array(
+                'data with blank lines' => [
+                        'parameters' => [
                                 'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/BlankLines.csv',
                                 'delimiter' => ';',
                                 'skip_rows' => 0
-                        ),
-                        'result' => array(
-                                array(
+                        ],
+                        'result' => [
+                                [
                                         'foo',
                                         '12'
-                                ),
-                                array(
+                                ],
+                                [
                                         'bar',
                                         '42'
-                                )
-                        )
-                ),
-                'empty and missing columns' => array(
-                        'parameters' => array(
+                                ]
+                        ]
+                ],
+                'empty and missing columns' => [
+                        'parameters' => [
                                 'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/MissingData.csv',
                                 'delimiter' => ';',
                                 'skip_rows' => 0
-                        ),
-                        'result' => array(
-                                array(
+                        ],
+                        'result' => [
+                                [
                                         'foo',
                                         '12',
                                         'aaa'
-                                ),
+                                ],
                                 // Missing columns at the end are totally missing in the result
-                                array(
+                                [
                                         'bar',
                                         '42'
-                                ),
+                                ],
                                 // Missing columns before the last one are returned as empty strings...
-                                array(
+                                [
                                         'baz',
                                         '',
                                         'bbb'
-                                ),
+                                ],
                                 // ...but spaces are preserved
-                                array(
+                                [
                                         ' ',
                                         '',
                                         'ccc'
-                                ),
-                                array(
+                                ],
+                                [
                                         '36'
-                                )
-                        )
-                )
-        );
+                                ]
+                        ]
+                ]
+        ];
         return $data;
     }
 
@@ -184,9 +183,9 @@ class ConnectorCsvTest extends FunctionalTestCase
     public function readingUnknownFileThrowsException()
     {
         $this->subject->fetchArray(
-                array(
+                [
                         'filename' => 'foobar.txt'
-                )
+                ]
         );
     }
 }

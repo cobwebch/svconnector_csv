@@ -30,8 +30,7 @@ class ConnectorCsv extends ConnectorBase
 {
     public $prefixId = 'tx_svconnectorcsv_sv1';        // Same as class name
     public $scriptRelPath = 'sv1/class.tx_svconnectorcsv_sv1.php';    // Path to this script relative to the extension dir.
-    public $extKey = 'svconnector_csv';    // The extension key.
-    protected $extConf; // Extension configuration
+    public $extensionKey = 'svconnector_csv';    // The extension key.
 
     /**
      * Verifies that the connection is functional
@@ -40,10 +39,9 @@ class ConnectorCsv extends ConnectorBase
      *
      * @return boolean TRUE if the service is available
      */
-    public function init()
+    public function init(): bool
     {
         parent::init();
-        $this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extKey]);
         return true;
     }
 
@@ -54,14 +52,15 @@ class ConnectorCsv extends ConnectorBase
      * @param array $parameters Parameters for the call
      *
      * @return mixed Server response
+     * @throws \Exception
      */
     public function fetchRaw($parameters)
     {
         $result = $this->query($parameters);
         // Implement post-processing hook
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processRaw'])) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processRaw'] as $className) {
-                $processor = GeneralUtility::getUserObj($className);
+        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extensionKey]['processRaw'])) {
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extensionKey]['processRaw'] as $className) {
+                $processor = GeneralUtility::makeInstance($className);
                 $result = $processor->processRaw($result, $this);
             }
         }
@@ -74,8 +73,9 @@ class ConnectorCsv extends ConnectorBase
      * @param array $parameters Parameters for the call
      *
      * @return string XML structure
+     * @throws \Exception
      */
-    public function fetchXML($parameters)
+    public function fetchXML($parameters): string
     {
         // Get the data as an array
         $result = $this->fetchArray($parameters);
@@ -89,9 +89,9 @@ class ConnectorCsv extends ConnectorBase
         }
         $xml = '<?xml version="1.0" encoding="' . htmlspecialchars($encoding) . '" standalone="yes" ?>' . LF . $xml;
         // Implement post-processing hook
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processXML'])) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processXML'] as $className) {
-                $processor = GeneralUtility::getUserObj($className);
+        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extensionKey]['processXML'])) {
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extensionKey]['processXML'] as $className) {
+                $processor = GeneralUtility::makeInstance($className);
                 $xml = $processor->processXML($xml, $this);
             }
         }
@@ -104,11 +104,12 @@ class ConnectorCsv extends ConnectorBase
      * @param array $parameters Parameters for the call
      *
      * @return array PHP array
+     * @throws \Exception
      */
-    public function fetchArray($parameters)
+    public function fetchArray($parameters): array
     {
-        $headers = array();
-        $data = array();
+        $headers = [];
+        $data = [];
         // Get the data from the file
         $result = $this->query($parameters);
         $numResults = count($result);
@@ -121,26 +122,20 @@ class ConnectorCsv extends ConnectorBase
                 }
             }
             foreach ($result as $row) {
-                $rowData = array();
+                $rowData = [];
                 foreach ($row as $index => $value) {
-                    if (isset($headers[$index])) {
-                        $key = $headers[$index];
-                    } else {
-                        $key = $index;
-                    }
+                    $key = $headers[$index] ?? $index;
                     $rowData[$key] = $value;
                 }
                 $data[] = $rowData;
             }
         }
-        if (TYPO3_DLOG || $this->extConf['debug']) {
-            GeneralUtility::devLog('Structured data', $this->extKey, -1, $data);
-        }
+        $this->logger->info('Structured data', $data);
 
         // Implement post-processing hook
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processArray'])) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processArray'] as $className) {
-                $processor = GeneralUtility::getUserObj($className);
+        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extensionKey]['processArray'])) {
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extensionKey]['processArray'] as $className) {
+                $processor = GeneralUtility::makeInstance($className);
                 $data = $processor->processArray($data, $this);
             }
         }
@@ -154,26 +149,17 @@ class ConnectorCsv extends ConnectorBase
      *       as it does not make sense in this case
      *
      * @param array $parameters Parameters for the call
-     * @return array Content of the file
-     * @throws SourceErrorException
+     * @return mixed Content of the file
      * @throws \Exception
      */
     protected function query($parameters)
     {
-        $fileData = array();
-        if (TYPO3_DLOG || $this->extConf['debug']) {
-            GeneralUtility::devLog('Call parameters', $this->extKey, -1, $parameters);
-        }
+        $fileData = [];
+        $this->logger->info('Call parameters', $parameters);
         // Check if the file is defined and exists
         if (empty($parameters['filename'])) {
             $message = $this->sL('LLL:EXT:svconnector_csv/Resources/Private/Language/locallang.xlf:no_file_defined');
-            if (TYPO3_DLOG || $this->extConf['debug']) {
-                GeneralUtility::devLog($message, $this->extKey, 3);
-            }
-            throw new SourceErrorException(
-                    $message,
-                    1299358179
-            );
+            $this->raiseError($message, 1299358179, [], SourceErrorException::class);
         }
 
         // Check if the current (BE) charset is the same as the file encoding
@@ -195,20 +181,14 @@ class ConnectorCsv extends ConnectorBase
                     $parameters['filename'],
                     $error
             );
-            if (TYPO3_DLOG || $this->extConf['debug']) {
-                GeneralUtility::devLog($message, $this->extKey, 3);
-            }
-            throw new SourceErrorException(
-                    $message,
-                    1299358355
-            );
+            $this->raiseError($message, 1299358355, [], SourceErrorException::class);
         }
 
         // Split the file content into lines
         $lines =  preg_split("/\r\n|\n|\r/", $fileContent);
 
-        $delimiter = (empty($parameters['delimiter'])) ? ',' : $parameters['delimiter'];
-        $qualifier = (empty($parameters['text_qualifier'])) ? '"' : $parameters['text_qualifier'];
+        $delimiter = empty($parameters['delimiter']) ? ',' : $parameters['delimiter'];
+        $qualifier = empty($parameters['text_qualifier']) ? '"' : $parameters['text_qualifier'];
 
         // Set locale, if specific locale is defined
         $oldLocale = '';
@@ -235,9 +215,7 @@ class ConnectorCsv extends ConnectorBase
             }
             $fileData[] = $row;
         }
-        if (TYPO3_DLOG || $this->extConf['debug']) {
-            GeneralUtility::devLog('Data from file', $this->extKey, -1, $fileData);
-        }
+        $this->logger->info('Data from file', $fileData);
 
         // Reset locale, if necessary
         if (!empty($oldLocale)) {
@@ -245,9 +223,9 @@ class ConnectorCsv extends ConnectorBase
         }
 
         // Process the result if any hook is registered
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processResponse'])) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['processResponse'] as $className) {
-                $processor = GeneralUtility::getUserObj($className);
+        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extensionKey]['processResponse'])) {
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extensionKey]['processResponse'] as $className) {
+                $processor = GeneralUtility::makeInstance($className);
                 $fileData = $processor->processResponse($fileData, $this);
             }
         }
