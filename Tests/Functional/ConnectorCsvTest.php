@@ -34,16 +34,24 @@ class ConnectorCsvTest extends FunctionalTestCase
     ];
 
     /**
-     * @var \Cobweb\SvconnectorFeed\Service\ConnectorFeed
+     * @var \Cobweb\SvconnectorCsv\Service\ConnectorCsv
      */
     protected $subject;
 
+    /**
+     * Sets up the test environment.
+     */
     public function setUp()
     {
         parent::setUp();
-        /** @var ConnectorRepository $connectorRepository */
-        $connectorRepository = GeneralUtility::makeInstance(ConnectorRepository::class);
-        $this->subject = $connectorRepository->findServiceByKey('tx_svconnectorcsv_sv1');
+        try {
+            /** @var ConnectorRepository $connectorRepository */
+            $connectorRepository = GeneralUtility::makeInstance(ConnectorRepository::class);
+            $this->subject = $connectorRepository->findServiceByKey('tx_svconnectorcsv_sv1');
+        }
+        catch (\Exception $e) {
+            self::markTestSkipped($e->getMessage());
+        }
     }
 
     /**
@@ -169,6 +177,7 @@ class ConnectorCsvTest extends FunctionalTestCase
      * @param array $result Expected array structure
      * @test
      * @dataProvider sourceDataProvider
+     * @throws \Exception
      */
     public function readingCsvFileIntoArray($parameters, $result)
     {
