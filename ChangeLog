@@ -2,6 +2,7 @@
 
 	* Drop compatibility with TYPO3 7, clean up code and prepare for compatibility with TYPO3 9, resolves #5
 	* Add mention of svconnector_csv_extended extension, resolves #2
+	* Fix broken reading of files with line breaks inside fields, resolves #4
 
 2018-07-18 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 

@@ -173,8 +173,8 @@ class ConnectorCsv extends ConnectorBase
 
         /** @var FileUtility $fileUtility */
         $fileUtility = GeneralUtility::makeInstance(FileUtility::class);
-        $fileContent =  $fileUtility->getFileContent($parameters['filename']);
-        if ($fileContent === false) {
+        $temporaryFile =  $fileUtility->getFileAsTemporaryFile($parameters['filename']);
+        if ($temporaryFile === false) {
             $error = $fileUtility->getError();
             $message = sprintf(
                     $this->sL('LLL:EXT:svconnector_csv/Resources/Private/Language/locallang.xlf:file_not_found_reason'),
@@ -183,9 +183,6 @@ class ConnectorCsv extends ConnectorBase
             );
             $this->raiseError($message, 1299358355, [], SourceErrorException::class);
         }
-
-        // Split the file content into lines
-        $lines =  preg_split("/\r\n|\n|\r/", $fileContent);
 
         $delimiter = empty($parameters['delimiter']) ? ',' : $parameters['delimiter'];
         $qualifier = empty($parameters['text_qualifier']) ? '"' : $parameters['text_qualifier'];
@@ -197,9 +194,8 @@ class ConnectorCsv extends ConnectorBase
             $oldLocale = setlocale(LC_ALL, 0);
             setlocale(LC_ALL, $parameters['locale']);
         }
-
-        foreach ($lines as $line) {
-            $row = str_getcsv($line, $delimiter, $qualifier);
+        $filePointer = fopen($temporaryFile, 'rb');
+        while ($row = fgetcsv($filePointer, 0, $delimiter, $qualifier)) {
             $numData = count($row);
             // If the row is an array with a single NULL entry, it corresponds to a blank line
             // and we want to skip it (see note in http://php.net/manual/en/function.fgetcsv.php#refsect1-function.fgetcsv-returnvalues)
@@ -215,6 +211,7 @@ class ConnectorCsv extends ConnectorBase
             }
             $fileData[] = $row;
         }
+        unlink($temporaryFile);
         $this->logger->info('Data from file', $fileData);
 
         // Reset locale, if necessary
