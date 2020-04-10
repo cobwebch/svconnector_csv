@@ -29,7 +29,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class ConnectorCsv extends ConnectorBase
 {
     public $prefixId = 'tx_svconnectorcsv_sv1';        // Same as class name
-    public $scriptRelPath = 'sv1/class.tx_svconnectorcsv_sv1.php';    // Path to this script relative to the extension dir.
     public $extensionKey = 'svconnector_csv';    // The extension key.
 
     /**
@@ -82,11 +81,7 @@ class ConnectorCsv extends ConnectorBase
         // Transform result to XML
         $xml = GeneralUtility::array2xml($result);
         // Check if the current (BE) charset is the same as the file encoding
-        if (empty($parameters['encoding'])) {
-            $encoding = 'utf-8';
-        } else {
-            $encoding = $this->getCharsetConverter()->parse_charset($parameters['encoding']);
-        }
+        $encoding = $parameters['encoding'] ?? 'UTF-8';
         $xml = '<?xml version="1.0" encoding="' . htmlspecialchars($encoding) . '" standalone="yes" ?>' . LF . $xml;
         // Implement post-processing hook
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extensionKey]['processXML'])) {
@@ -167,7 +162,7 @@ class ConnectorCsv extends ConnectorBase
             $encoding = '';
             $isSameCharset = true;
         } else {
-            $encoding = $this->getCharsetConverter()->parse_charset($parameters['encoding']);
+            $encoding = $parameters['encoding'];
             $isSameCharset = $this->getCharset() === $encoding;
         }
 
