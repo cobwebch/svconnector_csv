@@ -17,6 +17,7 @@ namespace Cobweb\SvconnectorCsv\Service;
 use Cobweb\Svconnector\Exception\SourceErrorException;
 use Cobweb\Svconnector\Service\ConnectorBase;
 use Cobweb\Svconnector\Utility\FileUtility;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -42,6 +43,22 @@ class ConnectorCsv extends ConnectorBase
     {
         parent::init();
         return true;
+    }
+
+    /**
+     * Checks the connector configuration and returns notices, warnings or errors, if any.
+     *
+     * @param array $parameters Connector call parameters
+     * @return array
+     */
+    public function checkConfiguration($parameters): array
+    {
+        $result = parent::checkConfiguration($parameters);
+        // The "filename" parameter is mandatory
+        if (empty($parameters['filename'])) {
+            $result[AbstractMessage::ERROR][] = $this->sL('LLL:EXT:svconnector_csv/Resources/Private/Language/locallang.xlf:missing_filename_parameter');
+        }
+        return $result;
     }
 
     /**
@@ -151,10 +168,24 @@ class ConnectorCsv extends ConnectorBase
     {
         $fileData = [];
         $this->logger->info('Call parameters', $parameters);
-        // Check if the file is defined and exists
-        if (empty($parameters['filename'])) {
-            $message = $this->sL('LLL:EXT:svconnector_csv/Resources/Private/Language/locallang.xlf:no_file_defined');
-            $this->raiseError($message, 1299358179, [], SourceErrorException::class);
+        // Check the configuration
+        $problems = $this->checkConfiguration($parameters);
+        // Log all issues and raise error if any
+        $this->logConfigurationCheck($problems);
+        if (count($problems[AbstractMessage::ERROR]) > 0) {
+            $message = '';
+            foreach ($problems[AbstractMessage::ERROR] as $problem) {
+                if ($message !== '') {
+                    $message .= "\n";
+                }
+                $message .= $problem;
+            }
+            $this->raiseError(
+                    $message,
+                    1299358179,
+                    [],
+                    SourceErrorException::class
+            );
         }
 
         // Check if the current (BE) charset is the same as the file encoding

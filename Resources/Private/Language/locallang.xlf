@@ -15,6 +15,9 @@
 			<trans-unit id="file_not_found_reason" xml:space="preserve">
 				<source>Import file not found: %1$s (reason: %2$s)</source>
 			</trans-unit>
+			<trans-unit id="missing_filename_parameter" xml:space="preserve">
+				<source>The "filename" parameter is mandatory.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
