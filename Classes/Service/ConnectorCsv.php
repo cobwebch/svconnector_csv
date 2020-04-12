@@ -237,8 +237,17 @@ class ConnectorCsv extends ConnectorBase
             }
             $fileData[] = $row;
         }
-        unlink($temporaryFile);
         $this->logger->info('Data from file', $fileData);
+        // Remove the temporary file, issue notice if not possible
+        $result = @unlink($temporaryFile);
+        if (!$result) {
+            $this->logger->notice(
+                    sprintf(
+                            'Temporary file %s could not be deleted',
+                            $temporaryFile
+                    )
+            );
+        }
 
         // Reset locale, if necessary
         if (!empty($oldLocale)) {

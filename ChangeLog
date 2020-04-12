@@ -2,6 +2,7 @@
 
 	* Implement new configuration check API, resolves #7
 	* Update documentation settings, resolves #8
+	* Avoid critical failure when temporary file cannot be deleted, resolves #6
 
 2020-04-10 Francois Suter (Idéative)  <typo3@ideative.ch>
 
