@@ -46,6 +46,7 @@ parameters:
 |                 |               | This has an additional special meaning if larger than 0. The CSV              |                  |
 |                 |               | connector will take the first line and read column labels from it.            |                  |
 |                 |               | These labels will then be used as keys in the array of data returned.         |                  |
+|                 |               | The other skipped lines are totally igonred.                                  |                  |
 |                 |               |                                                                               |                  |
 |                 |               | .. note::                                                                     |                  |
 |                 |               |                                                                               |                  |

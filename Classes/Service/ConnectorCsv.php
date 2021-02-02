@@ -32,6 +32,11 @@ class ConnectorCsv extends ConnectorBase
     public $prefixId = 'tx_svconnectorcsv_sv1';        // Same as class name
     public $extensionKey = 'svconnector_csv';    // The extension key.
 
+    public function __toString(): string
+    {
+        return self::class;
+    }
+
     /**
      * Verifies that the connection is functional
      * In the case of CSV, it is always the case
@@ -127,10 +132,14 @@ class ConnectorCsv extends ConnectorBase
         $numResults = count($result);
         // If there are some results, process them
         if ($numResults > 0) {
-            // Handle header rows, if any
+            // Handle skipped rows
+            // Assume that first skipped row is header row, ignore the others
             if (!empty($parameters['skip_rows'])) {
                 for ($i = 0; $i < $parameters['skip_rows']; $i++) {
-                    $headers = array_shift($result);
+                    $shifted = array_shift($result);
+                    if ($i === 0) {
+                        $headers = $shifted;
+                    }
                 }
             }
             foreach ($result as $row) {

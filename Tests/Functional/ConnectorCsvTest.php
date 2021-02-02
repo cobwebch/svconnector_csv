@@ -96,7 +96,28 @@ class ConnectorCsvTest extends FunctionalTestCase
                                 ]
                         ]
                 ],
-                'clean data, with header row' => [
+                'clean data, with header row (skip 0)' => [
+                        'parameters' => [
+                                'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/CleanDataWithHeaderRow.csv',
+                                'delimiter' => ';',
+                                'skip_rows' => 0
+                        ],
+                        'result' => [
+                                [
+                                        0 => 'name',
+                                        1 => 'code'
+                                ],
+                                [
+                                        0 => 'foo',
+                                        1 => '12'
+                                ],
+                                [
+                                        0 => 'bar',
+                                        1 => '42'
+                                ]
+                        ]
+                ],
+                'clean data, with header row (skip 1)' => [
                         'parameters' => [
                                 'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/CleanDataWithHeaderRow.csv',
                                 'delimiter' => ';',
@@ -107,6 +128,19 @@ class ConnectorCsvTest extends FunctionalTestCase
                                         'name' => 'foo',
                                         'code' => '12'
                                 ],
+                                [
+                                        'name' => 'bar',
+                                        'code' => '42'
+                                ]
+                        ]
+                ],
+                'clean data, with header row (skip 2)' => [
+                        'parameters' => [
+                                'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/CleanDataWithHeaderRow.csv',
+                                'delimiter' => ';',
+                                'skip_rows' => 2
+                        ],
+                        'result' => [
                                 [
                                         'name' => 'bar',
                                         'code' => '42'

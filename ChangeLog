@@ -1,3 +1,7 @@
+2021-02-02 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Use stricly first row as header no matter how many rows are skipped, resolves #9
+
 2020-05-07 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Release version 2.4.0
