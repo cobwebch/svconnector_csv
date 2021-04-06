@@ -1,0 +1,12 @@
+# Configuration/Services.yaml
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Cobweb\SvconnectorCsv\:
+    resource: '../Classes/*'
+
+  Cobweb\SvconnectorCsv\Service\ConnectorCsv:
+    public: true
