@@ -12,7 +12,7 @@
 
 2021-02-02 Francois Suter (Idéative)  <typo3@ideative.ch>
 
-	* Use stricly first row as header no matter how many rows are skipped, resolves #9
+	* Use strictly first row as header no matter how many rows are skipped, resolves #9
 	* Release version 2.4.1
 
 2020-05-07 Francois Suter (Idéative)  <typo3@ideative.ch>
