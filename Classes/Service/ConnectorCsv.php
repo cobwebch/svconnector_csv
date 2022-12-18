@@ -22,19 +22,26 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Service "CSV connector" for the "svconnector_csv" extension.
- *
- * @author Francois Suter (Cobweb) <typo3@cobweb.ch>
- * @package TYPO3
- * @subpackage tx_svconnectorcsv
  */
 class ConnectorCsv extends ConnectorBase
 {
-    public $prefixId = 'tx_svconnectorcsv_sv1';        // Same as class name
-    public $extensionKey = 'svconnector_csv';    // The extension key.
+    protected string $extensionKey = 'svconnector_csv';
+
+    protected string $type = 'csv';
 
     public function __toString(): string
     {
         return self::class;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function getName(): string
+    {
+        return 'CSV connector';
     }
 
     /**
@@ -44,9 +51,8 @@ class ConnectorCsv extends ConnectorBase
      *
      * @return boolean TRUE if the service is available
      */
-    public function init(): bool
+    public function isAvailable(): bool
     {
-        parent::init();
         return true;
     }
 
@@ -56,7 +62,7 @@ class ConnectorCsv extends ConnectorBase
      * @param array $parameters Connector call parameters
      * @return array
      */
-    public function checkConfiguration($parameters): array
+    public function checkConfiguration(array $parameters = []): array
     {
         $result = parent::checkConfiguration($parameters);
         // The "filename" parameter is mandatory
@@ -75,7 +81,7 @@ class ConnectorCsv extends ConnectorBase
      * @return mixed Server response
      * @throws \Exception
      */
-    public function fetchRaw($parameters)
+    public function fetchRaw(array $parameters = [])
     {
         $result = $this->query($parameters);
         // Implement post-processing hook
@@ -97,7 +103,7 @@ class ConnectorCsv extends ConnectorBase
      * @return string XML structure
      * @throws \Exception
      */
-    public function fetchXML($parameters): string
+    public function fetchXML(array $parameters = []): string
     {
         // Get the data as an array
         $result = $this->fetchArray($parameters);
@@ -125,7 +131,7 @@ class ConnectorCsv extends ConnectorBase
      * @return array PHP array
      * @throws \Exception
      */
-    public function fetchArray($parameters): array
+    public function fetchArray(array $parameters = []): array
     {
         $headers = [];
         $data = [];
@@ -176,7 +182,7 @@ class ConnectorCsv extends ConnectorBase
      * @return mixed Content of the file
      * @throws \Exception
      */
-    protected function query($parameters)
+    protected function query(array $parameters = [])
     {
         $fileData = [];
         $this->logger->info('Call parameters', $parameters);
