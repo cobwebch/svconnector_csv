@@ -17,9 +17,9 @@ easy task. The first step is to get the proper service object:
 .. code-block:: php
 
    $registry = GeneralUtility::makeInstance(\Cobweb\Svconnector\Registry\ConnectorRegistry::class);
-   $connector = $registry->getServiceForType($key);
+   $connector = $registry->getServiceForType('csv');
 
-The next step could be to check if the service is indeed available,
+An additional step could be to check if the service is indeed available,
 by calling :php:`$connector->isAvailable()`, although - in this particular
 case - the CSV connector service is always available.
 
