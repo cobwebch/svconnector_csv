@@ -16,21 +16,12 @@ easy task. The first step is to get the proper service object:
 
 .. code-block:: php
 
-	$services = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::findService('connector', 'csv');
-	if ($services === false) {
-		// Issue an error
-	} else {
-		$connector = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstanceService('connector', 'csv');
-	}
+   $registry = GeneralUtility::makeInstance(\Cobweb\Svconnector\Registry\ConnectorRegistry::class);
+   $connector = $registry->getServiceForType($key);
 
-On the first line, you get a list of all services that are of type
-“connector” and subtype “csv”. If the result if false, it means no
-appropriate services were found and you probably want to issue an
-error message.
-
-On the contrary you are assured that there's at least one valid
-service and you can get an instance of it by calling
-:code:`\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstanceService()` .
+The next step could be to check if the service is indeed available,
+by calling :php:`$connector->isAvailable()`, although - in this particular
+case - the CSV connector service is always available.
 
 The next step is simply to call the appropriate method from the API –
 with the right parameters – depending on which format you want to have
