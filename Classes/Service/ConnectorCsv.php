@@ -17,7 +17,7 @@ namespace Cobweb\SvconnectorCsv\Service;
 use Cobweb\Svconnector\Exception\SourceErrorException;
 use Cobweb\Svconnector\Service\ConnectorBase;
 use Cobweb\Svconnector\Utility\FileUtility;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -67,7 +67,7 @@ class ConnectorCsv extends ConnectorBase
         $result = parent::checkConfiguration($parameters);
         // The "filename" parameter is mandatory
         if (empty($parameters['filename'])) {
-            $result[AbstractMessage::ERROR][] = $this->sL('LLL:EXT:svconnector_csv/Resources/Private/Language/locallang.xlf:missing_filename_parameter');
+            $result[ContextualFeedbackSeverity::ERROR->value][] = $this->sL('LLL:EXT:svconnector_csv/Resources/Private/Language/locallang.xlf:missing_filename_parameter');
         }
         return $result;
     }
@@ -190,9 +190,9 @@ class ConnectorCsv extends ConnectorBase
         $problems = $this->checkConfiguration($parameters);
         // Log all issues and raise error if any
         $this->logConfigurationCheck($problems);
-        if (count($problems[AbstractMessage::ERROR]) > 0) {
+        if (count($problems[ContextualFeedbackSeverity::ERROR->value]) > 0) {
             $message = '';
-            foreach ($problems[AbstractMessage::ERROR] as $problem) {
+            foreach ($problems[ContextualFeedbackSeverity::ERROR->value] as $problem) {
                 if ($message !== '') {
                     $message .= "\n";
                 }
