@@ -1,5 +1,6 @@
 <?php
-namespace Cobweb\SvconnectorCsv\Service;
+
+declare(strict_types=1);
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -14,6 +15,8 @@ namespace Cobweb\SvconnectorCsv\Service;
  * The TYPO3 project - inspiring people to share!
  */
 
+namespace Cobweb\SvconnectorCsv\Service;
+
 use Cobweb\Svconnector\Exception\SourceErrorException;
 use Cobweb\Svconnector\Service\ConnectorBase;
 use Cobweb\Svconnector\Utility\FileUtility;
@@ -23,7 +26,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * Service "CSV connector" for the "svconnector_csv" extension.
  */
-class ConnectorCsv extends ConnectorBase
+class ConnectorCsv extends ConnectorBase implements \Stringable
 {
     protected string $extensionKey = 'svconnector_csv';
 
@@ -111,7 +114,7 @@ class ConnectorCsv extends ConnectorBase
         $xml = GeneralUtility::array2xml($result);
         // Check if the current (BE) charset is the same as the file encoding
         $encoding = $parameters['encoding'] ?? 'UTF-8';
-        $xml = '<?xml version="1.0" encoding="' . htmlspecialchars($encoding) . '" standalone="yes" ?>' . LF . $xml;
+        $xml = '<?xml version="1.0" encoding="' . htmlspecialchars((string) $encoding) . '" standalone="yes" ?>' . LF . $xml;
         // Implement post-processing hook
         $hooks = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extensionKey]['processXML'] ?? null;
         if (is_array($hooks)) {

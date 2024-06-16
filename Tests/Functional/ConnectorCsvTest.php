@@ -17,7 +17,7 @@ namespace Cobweb\SvconnectorCsv\Unit\Tests;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Cobweb\Svconnector\Domain\Repository\ConnectorRepository;
+use Cobweb\Svconnector\Exception\SourceErrorException;
 use Cobweb\SvconnectorCsv\Service\ConnectorCsv;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -39,7 +39,6 @@ class ConnectorCsvTest extends FunctionalTestCase
      */
     public function setUp(): void
     {
-        parent::setUp();
         try {
             $this->subject = GeneralUtility::makeInstance(ConnectorCsv::class);
         } catch (\Exception $e) {
@@ -216,7 +215,7 @@ class ConnectorCsvTest extends FunctionalTestCase
      */
     public function readingUnknownFileThrowsException(): void
     {
-        $this->expectException(\Cobweb\Svconnector\Exception\SourceErrorException::class);
+        $this->expectException(SourceErrorException::class);
         $this->subject->fetchArray(
             [
                 'filename' => 'foobar.txt'
