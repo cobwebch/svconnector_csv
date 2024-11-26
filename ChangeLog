@@ -2,6 +2,8 @@
 
     * Adapt to changes in svconnector, resolves #14
     * Verify compatibility with TYPO3 13 ELTS, resolves #13
+    * Move tests to typo3/testing-framework
+    * Move documentation to PHP-based rendering
 
 2024-06-16 Francois Suter (Idéative)  <typo3@ideative.ch>
 

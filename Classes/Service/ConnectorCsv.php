@@ -121,7 +121,7 @@ class ConnectorCsv extends ConnectorBase
         $xml = GeneralUtility::array2xml($result);
         // Check if the current (BE) charset is the same as the file encoding
         $encoding = $this->parameters['encoding'] ?? 'UTF-8';
-        $xml = '<?xml version="1.0" encoding="' . htmlspecialchars((string)$encoding) . '" standalone="yes" ?>' . LF . $xml;
+        $xml = '<?xml version="1.0" encoding="' . htmlspecialchars((string)$encoding) . '" standalone="yes" ?>' . chr(10) . $xml;
         // Implement post-processing hook
         $hooks = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extensionKey]['processXML'] ?? null;
         if (is_array($hooks) && count($hooks) > 0) {

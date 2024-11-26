@@ -19,15 +19,17 @@ namespace Cobweb\SvconnectorCsv\Unit\Tests;
 
 use Cobweb\Svconnector\Exception\SourceErrorException;
 use Cobweb\SvconnectorCsv\Service\ConnectorCsv;
-use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
  * Testcase for the CSV Connector service.
  */
 class ConnectorCsvTest extends FunctionalTestCase
 {
-    protected $testExtensionsToLoad = [
+    protected array $testExtensionsToLoad = [
         'typo3conf/ext/svconnector',
         'typo3conf/ext/svconnector_csv',
     ];
@@ -39,6 +41,7 @@ class ConnectorCsvTest extends FunctionalTestCase
      */
     public function setUp(): void
     {
+        parent::setUp();
         try {
             $this->subject = GeneralUtility::makeInstance(ConnectorCsv::class);
         } catch (\Exception $e) {
@@ -58,86 +61,86 @@ class ConnectorCsvTest extends FunctionalTestCase
                 'parameters' => [
                     'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/CleanDataNoHeaderRow.csv',
                     'delimiter' => ';',
-                    'skip_rows' => 0
+                    'skip_rows' => 0,
                 ],
                 'result' => [
                     [
                         'foo',
-                        '12'
+                        '12',
                     ],
                     [
                         'bar',
-                        '42'
-                    ]
-                ]
+                        '42',
+                    ],
+                ],
             ],
             'clean data, no header row, Windows line endings' => [
                 'parameters' => [
                     'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/CleanDataNoHeaderRowWindowsLineEndings.csv',
                     'delimiter' => ';',
-                    'skip_rows' => 0
+                    'skip_rows' => 0,
                 ],
                 'result' => [
                     [
                         'foo',
-                        '12'
+                        '12',
                     ],
                     [
                         'bar',
-                        '42'
-                    ]
-                ]
+                        '42',
+                    ],
+                ],
             ],
             'clean data, with header row (skip 0)' => [
                 'parameters' => [
                     'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/CleanDataWithHeaderRow.csv',
                     'delimiter' => ';',
-                    'skip_rows' => 0
+                    'skip_rows' => 0,
                 ],
                 'result' => [
                     [
                         0 => 'name',
-                        1 => 'code'
+                        1 => 'code',
                     ],
                     [
                         0 => 'foo',
-                        1 => '12'
+                        1 => '12',
                     ],
                     [
                         0 => 'bar',
-                        1 => '42'
-                    ]
-                ]
+                        1 => '42',
+                    ],
+                ],
             ],
             'clean data, with header row (skip 1)' => [
                 'parameters' => [
                     'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/CleanDataWithHeaderRow.csv',
                     'delimiter' => ';',
-                    'skip_rows' => 1
+                    'skip_rows' => 1,
                 ],
                 'result' => [
                     [
                         'name' => 'foo',
-                        'code' => '12'
+                        'code' => '12',
                     ],
                     [
                         'name' => 'bar',
-                        'code' => '42'
-                    ]
-                ]
+                        'code' => '42',
+                    ],
+                ],
             ],
             'clean data, with header row (skip 2)' => [
                 'parameters' => [
                     'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/CleanDataWithHeaderRow.csv',
                     'delimiter' => ';',
-                    'skip_rows' => 2
+                    'skip_rows' => 2,
                 ],
                 'result' => [
                     [
                         'name' => 'bar',
-                        'code' => '42'
-                    ]
-                ]
+                        'code' => '42',
+                    ],
+                ],
             ],
             // Note: last blank line in any file is always ignored by fgetcsv()
             // Additional blank lines result in array with single NULL entry, which are filtered out by the connector service
@@ -145,53 +148,53 @@ class ConnectorCsvTest extends FunctionalTestCase
                 'parameters' => [
                     'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/BlankLines.csv',
                     'delimiter' => ';',
-                    'skip_rows' => 0
-                ],
-                'result' => [
-                    [
-                        'foo',
-                        '12'
-                    ],
-                    [
-                        'bar',
-                        '42'
-                    ]
-                ]
-            ],
-            'empty and missing columns' => [
-                'parameters' => [
-                    'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/MissingData.csv',
-                    'delimiter' => ';',
-                    'skip_rows' => 0
+                    'skip_rows' => 0,
                 ],
                 'result' => [
                     [
                         'foo',
                         '12',
-                        'aaa'
+                    ],
+                    [
+                        'bar',
+                        '42',
+                    ],
+                ],
+            ],
+            'empty and missing columns' => [
+                'parameters' => [
+                    'filename' => 'EXT:svconnector_csv/Tests/Functional/Fixtures/MissingData.csv',
+                    'delimiter' => ';',
+                    'skip_rows' => 0,
+                ],
+                'result' => [
+                    [
+                        'foo',
+                        '12',
+                        'aaa',
                     ],
                     // Missing columns at the end are totally missing in the result
                     [
                         'bar',
-                        '42'
+                        '42',
                     ],
                     // Missing columns before the last one are returned as empty strings...
                     [
                         'baz',
                         '',
-                        'bbb'
+                        'bbb',
                     ],
                     // ...but spaces are preserved
                     [
                         ' ',
                         '',
-                        'ccc'
+                        'ccc',
                     ],
                     [
-                        '36'
-                    ]
-                ]
-            ]
+                        '36',
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -200,26 +203,25 @@ class ConnectorCsvTest extends FunctionalTestCase
      *
      * @param array $parameters List of connector parameters
      * @param array $result Expected array structure
-     * @test
-     * @dataProvider sourceDataProvider
      * @throws \Exception
      */
+    #[Test] #[DataProvider('sourceDataProvider')]
     public function readingCsvFileIntoArray(array $parameters, array $result): void
     {
-        $data = $this->subject->fetchArray($parameters);
+        $this->subject->setParameters($parameters);
+        $data = $this->subject->fetchArray();
         self::assertSame($result, $data);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function readingUnknownFileThrowsException(): void
     {
         $this->expectException(SourceErrorException::class);
-        $this->subject->fetchArray(
+        $this->subject->setParameters(
             [
-                'filename' => 'foobar.txt'
+                'filename' => 'foobar.txt',
             ]
         );
+        $this->subject->fetchArray();
     }
 }
