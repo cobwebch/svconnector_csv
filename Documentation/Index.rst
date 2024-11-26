@@ -3,7 +3,7 @@
 .. --------------------------------------------------
 .. -*- coding: utf-8 -*- with BOM.
 
-.. include:: Includes.txt
+.. include:: /Includes.rst.txt
 
 
 .. _start:
@@ -27,7 +27,7 @@ CSV Connector Service
 		  CSV, data import, fetch data
 
 	:Copyright:
-		2009-2023
+		2009-2024
 
 	:Author:
 		  François Suter (Idéative)
@@ -36,15 +36,16 @@ CSV Connector Service
 		  typo3@ideative.ch
 
 	:License:
-		This document is published under the Open Content License
-		available from http://www.opencontent.org/opl.shtml
+        This document is published under the
+        `Creative Commons BY 4.0 <https://creativecommons.org/licenses/by/4.0/>`__
+        license.
 
 	:Rendered:
 		|today|
 
 
 The content of this document is related to TYPO3,
-a GNU/GPL CMS/Framework available from `www.typo3.org <http://www.typo3.org/>`_.
+a GNU/GPL CMS/Framework available from `www.typo3.org <https://www.typo3.org/>`_.
 
 
 
@@ -53,6 +54,7 @@ a GNU/GPL CMS/Framework available from `www.typo3.org <http://www.typo3.org/>`_.
 .. toctree::
    :maxdepth: 2
    :titlesonly:
+   :hidden:
 
    Introduction/Index
    Installation/Index
