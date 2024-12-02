@@ -252,7 +252,11 @@ class ConnectorCsv extends ConnectorBase
 
         /** @var FileUtility $fileUtility */
         $fileUtility = GeneralUtility::makeInstance(FileUtility::class);
-        $temporaryFile =  $fileUtility->getFileAsTemporaryFile($this->parameters['filename']);
+        $temporaryFile =  $fileUtility->getFileAsTemporaryFile(
+            $this->parameters['filename'],
+            $this->parameters['headers'] ?? null,
+            $this->parameters['method'] ?? 'GET'
+        );
         if ($temporaryFile === false) {
             $error = $fileUtility->getError();
             $message = sprintf(

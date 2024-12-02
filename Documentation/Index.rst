@@ -59,6 +59,7 @@ a GNU/GPL CMS/Framework available from `www.typo3.org <https://www.typo3.org/>`_
    Introduction/Index
    Installation/Index
    Configuration/Index
+   Considerations/Index
    Developer/Index
 
 .. Meta Menu

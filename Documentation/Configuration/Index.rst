@@ -11,20 +11,13 @@
 Configuration
 -------------
 
-The various "fetch" methods of the CSV connector take the same parameters,
-described below.
+This chapter describes the parameters that can be used to configure the CSV connector service.
 
 
-.. _configuration-parameters:
-
-Connector parameters
-^^^^^^^^^^^^^^^^^^^^
-
-
-.. _configuration-parameters-filename:
+.. _configuration-filename:
 
 filename
-""""""""
+^^^^^^^^
 
 Type
   string
@@ -43,10 +36,46 @@ Description
     :ref:`Connector Services <svconnector:developers-utilities-reading-files>`
 
 
-.. _configuration-parameters-encoding:
+.. _configuration-method:
+
+method
+^^^^^^
+
+Type
+  string
+
+Description
+  Method used to get the file (GET, POST, or whatever else is relevant).
+  This parameter is optional and the method defaults to GET.
+
+
+.. _configuration-headers:
+
+headers
+^^^^^^^
+
+Type
+  array
+
+Description
+  Key-value pairs of headers that should be sent along with the request.
+
+Example
+  Example headers for setting an alternate user agent and defining what reponse
+  format to accept.
+
+  .. code-block:: php
+
+      'headers' => [
+         'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:75.0) Gecko/20100101 Firefox/75.0',
+         'Accept' => 'text/csv',
+      ]
+
+
+.. _configuration-encoding:
 
 encoding
-""""""""
+^^^^^^^^
 
 Type
   string
@@ -57,10 +86,10 @@ Description
   https://www.php.net/manual/en/mbstring.supported-encodings.php
 
 
-.. _configuration-parameters-delimiter:
+.. _configuration-delimiter:
 
 delimiter
-"""""""""
+^^^^^^^^^
 
 Type
   string
@@ -72,10 +101,10 @@ Default
   , (comma)
 
 
-.. _configuration-parameters-text-qualifier:
+.. _configuration-text-qualifier:
 
 text\_qualifier
-"""""""""""""""
+^^^^^^^^^^^^^^^
 
 Type
   string
@@ -87,10 +116,10 @@ Default
   " (double quote)
 
 
-.. _configuration-parameters-skip-rows:
+.. _configuration-skip-rows:
 
 skip\_rows
-""""""""""
+^^^^^^^^^^
 
 Type
   int
@@ -111,10 +140,10 @@ Default
   0
 
 
-.. _configuration-parameters-locale:
+.. _configuration-locale:
 
 locale
-""""""
+^^^^^^
 
 Type
   int
@@ -125,59 +154,3 @@ Description
   This may not be necessary. However it may happen to be needed to
   handle badly-encoded files for example. The symptom is special
   characters – like umlauts – disappearing in the imported data.
-
-
-.. _configuration-considerations:
-
-Other considerations
-^^^^^^^^^^^^^^^^^^^^
-
-Once the data is read, it is converted from the encoding given as a parameter to the current encoding (either
-FE or BE, as stored in :code:`\TYPO3\CMS\Lang\LanguageService::$charSet`), if they are not the
-same. If the encoding parameter is left empty, no conversion takes place.
-
-.. warning::
-
-   Beware of incomplete data in the CSV file. It will result in variable results depending
-   on the position of the missing data. Consider the following CSV data:
-
-   .. code-block:: text
-
-      foo;12;aaa
-      bar;42
-      baz;;bbb
-       ;;ccc
-      36
-
-   Empty columns before the last one will be returned as empty strings. Missing columns at the end of each row
-   simply do not exist. The above data will be returned as the following PHP array:
-
-   .. code-block:: php
-
-      'result' => [
-         [
-            'foo',
-            '12',
-            'aaa'
-         ],
-         // Missing columns at the end are totally missing in the result
-         [
-            'bar',
-            '42'
-         ],
-         // Missing columns before the last one are returned as empty strings...
-         [
-            'baz',
-            '',
-            'bbb'
-         ],
-         // ...but spaces are preserved
-         [
-            ' ',
-            '',
-            'ccc'
-         ],
-         [
-            '36'
-         ]
-      )
