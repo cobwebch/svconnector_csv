@@ -54,7 +54,7 @@ class ConnectorCsvTest extends FunctionalTestCase
      *
      * @return array
      */
-    public function sourceDataProvider(): array
+    public static function sourceDataProvider(): array
     {
         return [
             'clean data, no header row, Unix line endings' => [
