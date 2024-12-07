@@ -12,10 +12,17 @@ Developer's manual
 ------------------
 
 Reading a flat file using the CSV connector service becomes a really
-easy task. The first step is to get the proper service object:
+easy task. The first step is to get the proper service object with the desired parameters:
 
 .. code-block:: php
 
+   $parameters = [
+      'filename' => 'path/to/your/file',
+      'delimiter' => “\t”,
+      'text_qualifier' => '',
+      'encoding' => 'utf-8',
+      'skip_rows' => 1,
+   ];
    $registry = GeneralUtility::makeInstance(\Cobweb\Svconnector\Registry\ConnectorRegistry::class);
    $connector = $registry->getServiceForType('csv');
 
@@ -23,22 +30,14 @@ An additional step could be to check if the service is indeed available,
 by calling :php:`$connector->isAvailable()`, although - in this particular
 case - the CSV connector service is always available.
 
-The next step is simply to call the appropriate method from the API –
-with the right parameters – depending on which format you want to have
+The next step is simply to call the appropriate method from the API depending on which format you want to have
 in return. For a PHP array:
 
 .. code-block:: php
 
-	$parameters = [
-		'filename' => 'path/to/your/file',
-		'delimiter' => “\t”,
-		'text_qualifier' => '',
-		'encoding' => 'utf-8',
-		'skip_rows' => 1,
-	];
-	$data = $connector->fetchArray($parameters);
+   $data = $connector->fetchArray($parameters);
 
-In this example we declare the file as using tabs as delimiter and no
+In the above example we declare the file as using tabs as delimiter and no
 text qualifier. Furthermore the file is declared as being encoded in
 UTF-8 and its first line should be ignored.
 
@@ -51,8 +50,7 @@ Let's assume the file looks something like this:
 	Oshiro	Ki
 	Duncan	Dwayne
 
-The resulting array stored in :code:`$data` in the example above will
-be:
+The resulting array stored in :code:`$data` will be:
 
 +------------+-------------+
 | last\_name | first\_name |
@@ -69,5 +67,3 @@ entry per line in the file and in each of these an entry per column.
 The :code:`fetchXML()` method returns the array created by
 :code:`fetchArray()` transformed to XML using
 :code:`\TYPO3\CMS\Core\Utility\GeneralUtility::array2xml_cs()`.
-
-
