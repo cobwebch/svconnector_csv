@@ -278,7 +278,7 @@ class ConnectorCsv extends ConnectorBase
             setlocale(LC_ALL, $this->parameters['locale']);
         }
         $filePointer = fopen($temporaryFile, 'rb');
-        while ($row = fgetcsv($filePointer, 0, $delimiter, $qualifier)) {
+        while ($row = fgetcsv($filePointer, 0, $delimiter, $qualifier, '\\')) {
             $numData = count($row);
             // If the row is an array with a single NULL entry, it corresponds to a blank line
             // and we want to skip it (see note in http://php.net/manual/en/function.fgetcsv.php#refsect1-function.fgetcsv-returnvalues)
