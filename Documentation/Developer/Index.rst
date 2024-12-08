@@ -18,17 +18,13 @@ easy task. The first step is to get the proper service object with the desired p
 
    $parameters = [
       'filename' => 'path/to/your/file',
-      'delimiter' => “\t”,
+      'delimiter' => "\t",
       'text_qualifier' => '',
       'encoding' => 'utf-8',
       'skip_rows' => 1,
    ];
    $registry = GeneralUtility::makeInstance(\Cobweb\Svconnector\Registry\ConnectorRegistry::class);
    $connector = $registry->getServiceForType('csv');
-
-An additional step could be to check if the service is indeed available,
-by calling :php:`$connector->isAvailable()`, although - in this particular
-case - the CSV connector service is always available.
 
 The next step is simply to call the appropriate method from the API depending on which format you want to have
 in return. For a PHP array:
