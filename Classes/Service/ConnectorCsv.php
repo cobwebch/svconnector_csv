@@ -50,13 +50,10 @@ class ConnectorCsv extends ConnectorBase
 
     /**
      * Checks the connector configuration and returns notices, warnings or errors, if any.
-     *
-     * @param array $parameters Connector call parameters
-     * @return array
      */
-    public function checkConfiguration(array $parameters = []): array
+    public function checkConfiguration(): array
     {
-        $result = parent::checkConfiguration(...func_get_args());
+        $result = parent::checkConfiguration();
         // The "filename" parameter is mandatory
         if (empty($this->parameters['filename'])) {
             $result[ContextualFeedbackSeverity::ERROR->value][] = $this->sL(
@@ -70,31 +67,11 @@ class ConnectorCsv extends ConnectorBase
      * This method calls the query method and returns the result as is,
      * i.e. the parsed CSV data, but without any additional work performed on it
      *
-     * @param array $parameters Parameters for the call
-     *
-     * @return mixed Server response
      * @throws \Exception
      */
-    public function fetchRaw(array $parameters = [])
+    public function fetchRaw(): mixed
     {
-        // Call to parent is used only to raise flag about argument deprecation
-        // TODO: remove once method signature is changed in next major version
-        parent::fetchRaw(...func_get_args());
-
         $result = $this->query();
-        // Implement post-processing hook
-        $hooks = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extensionKey]['processRaw'] ?? null;
-        if (is_array($hooks) && count($hooks) > 0) {
-            trigger_error(
-                'Using the processRaw hook is deprecated. Use the ProcessRawDataEvent instead',
-                E_USER_DEPRECATED
-            );
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extensionKey]['processRaw'] as $className) {
-                $processor = GeneralUtility::makeInstance($className);
-                $result = $processor->processRaw($result, $this);
-            }
-        }
-        /** @var ProcessRawDataEvent $event */
         $event = $this->eventDispatcher->dispatch(
             new ProcessRawDataEvent($result, $this)
         );
@@ -104,37 +81,18 @@ class ConnectorCsv extends ConnectorBase
     /**
      * This method calls the query and returns the results from the response as an XML structure
      *
-     * @param array $parameters Parameters for the call
-     *
-     * @return string XML structure
      * @throws \Exception
      */
-    public function fetchXML(array $parameters = []): string
+    public function fetchXML(): string
     {
-        // Call to parent is used only to raise flag about argument deprecation
-        // TODO: remove once method signature is changed in next major version
-        parent::fetchXML(...func_get_args());
-
         // Get the data as an array
         $result = $this->fetchArray();
         // Transform result to XML
         $xml = GeneralUtility::array2xml($result);
         // Check if the current (BE) charset is the same as the file encoding
         $encoding = $this->parameters['encoding'] ?? 'UTF-8';
-        $xml = '<?xml version="1.0" encoding="' . htmlspecialchars((string)$encoding) . '" standalone="yes" ?>' . chr(10) . $xml;
-        // Implement post-processing hook
-        $hooks = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extensionKey]['processXML'] ?? null;
-        if (is_array($hooks) && count($hooks) > 0) {
-            trigger_error(
-                'Using the processXML hook is deprecated. Use the ProcessXmlDataEvent instead',
-                E_USER_DEPRECATED
-            );
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extensionKey]['processXML'] as $className) {
-                $processor = GeneralUtility::makeInstance($className);
-                $xml = $processor->processXML($xml, $this);
-            }
-        }
-        /** @var ProcessXmlDataEvent $event */
+        $xml = '<?xml version="1.0" encoding="' . htmlspecialchars((string)$encoding) .
+            '" standalone="yes" ?>' . chr(10) . $xml;
         $event = $this->eventDispatcher->dispatch(
             new ProcessXmlDataEvent($xml, $this)
         );
@@ -145,17 +103,10 @@ class ConnectorCsv extends ConnectorBase
     /**
      * This method calls the query and returns the results from the response as a PHP array
      *
-     * @param array $parameters Parameters for the call
-     *
-     * @return array PHP array
      * @throws \Exception
      */
-    public function fetchArray(array $parameters = []): array
+    public function fetchArray(): array
     {
-        // Call to parent is used only to raise flag about argument deprecation
-        // TODO: remove once method signature is changed in next major version
-        parent::fetchArray(...func_get_args());
-
         $headers = [];
         $data = [];
         // Get the data from the file
@@ -184,19 +135,6 @@ class ConnectorCsv extends ConnectorBase
         }
         $this->logger->info('Structured data', $data);
 
-        // Implement post-processing hook
-        $hooks = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extensionKey]['processArray'] ?? null;
-        if (is_array($hooks) && count($hooks) > 0) {
-            trigger_error(
-                'Using the processArray hook is deprecated. Use the ProcessArrayDataEvent instead',
-                E_USER_DEPRECATED
-            );
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extensionKey]['processArray'] as $className) {
-                $processor = GeneralUtility::makeInstance($className);
-                $data = $processor->processArray($data, $this);
-            }
-        }
-        /** @var ProcessArrayDataEvent $event */
         $event = $this->eventDispatcher->dispatch(
             new ProcessArrayDataEvent($data, $this)
         );
@@ -206,19 +144,10 @@ class ConnectorCsv extends ConnectorBase
     /**
      * Reads the content of the file defined in the parameters and returns it as an array.
      *
-     * NOTE: this method does not implement the "processParameters" hook,
-     *       as it does not make sense in this case
-     *
-     * @param array $parameters Parameters for the call
-     * @return mixed Content of the file
      * @throws \Exception
      */
-    protected function query(array $parameters = [])
+    protected function query(): mixed
     {
-        // Call to parent is used only to raise flag about argument deprecation
-        // TODO: remove once method signature is changed in next major version
-        parent::query(...func_get_args());
-
         $fileData = [];
         $this->logger->info('Call parameters', $this->parameters);
         // Check the configuration
@@ -243,7 +172,7 @@ class ConnectorCsv extends ConnectorBase
 
         // Check if the current (BE) charset is the same as the file encoding
         if (empty($this->parameters['encoding'])) {
-            $encoding = '';
+            $encoding = null;
             $isSameCharset = true;
         } else {
             $encoding = $this->parameters['encoding'];
@@ -271,10 +200,10 @@ class ConnectorCsv extends ConnectorBase
         $qualifier = empty($this->parameters['text_qualifier']) ? '"' : $this->parameters['text_qualifier'];
 
         // Set locale, if specific locale is defined
-        $oldLocale = '';
+        $currentLocale = '';
         if (!empty($this->parameters['locale'])) {
-            // Get the old locale first, in order to restore it later
-            $oldLocale = setlocale(LC_ALL, 0);
+            // Get the current locale first, in order to restore it later
+            $currentLocale = setlocale(LC_ALL, '');
             setlocale(LC_ALL, $this->parameters['locale']);
         }
         $filePointer = fopen($temporaryFile, 'rb');
@@ -289,7 +218,7 @@ class ConnectorCsv extends ConnectorBase
             // convert every input to the proper charset
             if (!$isSameCharset) {
                 for ($i = 0; $i < $numData; $i++) {
-                    $row[$i] = $this->getCharsetConverter()->conv($row[$i], $encoding, $this->getCharset());
+                    $row[$i] = mb_convert_encoding($row[$i], $this->getCharset(), $encoding);
                 }
             }
             $fileData[] = $row;
@@ -307,23 +236,10 @@ class ConnectorCsv extends ConnectorBase
         }
 
         // Reset locale, if necessary
-        if (!empty($oldLocale)) {
-            setlocale(LC_ALL, $oldLocale);
+        if (!empty($currentLocale)) {
+            setlocale(LC_ALL, $currentLocale);
         }
 
-        // Process the result if any hook is registered
-        $hooks = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extensionKey]['processResponse'] ?? null;
-        if (is_array($hooks) && count($hooks) > 0) {
-            trigger_error(
-                'Using the processResponse hook is deprecated. Use the ProcessResponseEvent instead',
-                E_USER_DEPRECATED
-            );
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extensionKey]['processResponse'] as $className) {
-                $processor = GeneralUtility::makeInstance($className);
-                $fileData = $processor->processResponse($fileData, $this);
-            }
-        }
-        /** @var ProcessResponseEvent $event */
         $event = $this->eventDispatcher->dispatch(
             new ProcessResponseEvent($fileData, $this)
         );
