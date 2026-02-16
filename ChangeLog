@@ -1,3 +1,7 @@
+2026-02-16 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Add new "requestOptions" parameter, resolves #16
+
 2026-02-01 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Ensure compatibility with TYPO3 14 and PHP 8.5, resolves #15

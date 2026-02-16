@@ -18,6 +18,9 @@
 			<trans-unit id="missing_filename_parameter" xml:space="preserve">
 				<source>The "filename" parameter is mandatory.</source>
 			</trans-unit>
+			<trans-unit id="request_options_must_be_array" xml:space="preserve">
+				<source>The "requestOptions" parameter must be an array. It will be ignored.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
