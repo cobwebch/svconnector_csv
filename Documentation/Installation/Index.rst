@@ -25,13 +25,15 @@ https://github.com/portrino/svconnector_csv_extended
 Updating to 6.0.0
 ^^^^^^^^^^^^^^^^^
 
-Version 6.0.0 adds support for TYPO3 13 and PHP 8.5, while dropping support
+Version 6.0.0 adds support for TYPO3 14 and PHP 8.5, while dropping support
 for TYPO3 12 and PHP 8.1.
 
 A new parameter :ref:`requestOptions <configuration-request-options>` is available.
 It makes it possible to use any of the request options supported by Guzzle HTTP.
 The "headers" parameter has been deprecated. Headers should be passed as part of the
 "requestOptions" instead.
+
+Hooks have been entirely removed. Use only events.
 
 
 .. _installation-update-500:
