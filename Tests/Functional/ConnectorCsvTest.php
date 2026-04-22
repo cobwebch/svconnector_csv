@@ -43,7 +43,12 @@ class ConnectorCsvTest extends FunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->subject = GeneralUtility::makeInstance(ConnectorCsv::class);
+            $this->subject = GeneralUtility::makeInstance(
+                ConnectorCsv::class,
+                $this->getContainer()->get(\Psr\EventDispatcher\EventDispatcherInterface::class),
+                $this->getMockBuilder(\Cobweb\Svconnector\Domain\Model\Dto\CallContext::class)->getMock(),
+                $this->getMockBuilder(\Cobweb\Svconnector\Domain\Model\Dto\ConnectionInformation::class)->getMock()
+            );
         } catch (\Exception $e) {
             self::markTestSkipped($e->getMessage());
         }
