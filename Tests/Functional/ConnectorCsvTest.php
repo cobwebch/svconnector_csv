@@ -17,10 +17,13 @@ namespace Cobweb\SvconnectorCsv\Unit\Tests;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\Svconnector\Domain\Model\Dto\CallContext;
+use Cobweb\Svconnector\Domain\Model\Dto\ConnectionInformation;
 use Cobweb\Svconnector\Exception\SourceErrorException;
 use Cobweb\SvconnectorCsv\Service\ConnectorCsv;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
@@ -45,9 +48,9 @@ class ConnectorCsvTest extends FunctionalTestCase
         try {
             $this->subject = GeneralUtility::makeInstance(
                 ConnectorCsv::class,
-                $this->getContainer()->get(\Psr\EventDispatcher\EventDispatcherInterface::class),
-                $this->getMockBuilder(\Cobweb\Svconnector\Domain\Model\Dto\CallContext::class)->getMock(),
-                $this->getMockBuilder(\Cobweb\Svconnector\Domain\Model\Dto\ConnectionInformation::class)->getMock()
+                $this->getContainer()->get(EventDispatcherInterface::class),
+                $this->getMockBuilder(CallContext::class)->getMock(),
+                $this->getMockBuilder(ConnectionInformation::class)->getMock()
             );
         } catch (\Exception $e) {
             self::markTestSkipped($e->getMessage());
